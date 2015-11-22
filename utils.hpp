@@ -12,6 +12,7 @@
 #include <unordered_set>
 #include <tuple>
 
+
 template <typename T, std::size_t M, std::size_t N>
 std::ostream& operator<< (std::ostream& out, T (&A)[M][N])
 {
@@ -19,7 +20,7 @@ std::ostream& operator<< (std::ostream& out, T (&A)[M][N])
         for (int j =0; j < N; ++j) {
             out <<  A[i][j] << "\t";
         }
-        std::cout << std::endl;
+        out << std::endl;
     }
     return out;
 }
