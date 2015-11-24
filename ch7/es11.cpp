@@ -3,11 +3,13 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include "../utils.hpp"
 
 
 struct EliasGammaEconder {
     std::string encode (int n);
-    int decode(const std::string& str);
+    std::vector<int> decode(const std::string& str);
+    std::string encode (std::vector<int>& numbers);
 };
 
 std::string EliasGammaEconder::encode (int n) 
@@ -20,7 +22,7 @@ std::string EliasGammaEconder::encode (int n)
         ++count;
     } while(n>0);
 
-    while (count > 0) {
+    while (count > 1) {
         ss_res << '0';
         --count;
     }
@@ -30,10 +32,47 @@ std::string EliasGammaEconder::encode (int n)
     return res;
 }
 
+std::string EliasGammaEconder::encode (std::vector<int>& numbers)
+{
+    std::string res; 
+    for (const auto& n: numbers) {
+        res += encode(n);
+    }
+    return res;
+}
+
+
+std::vector<int> EliasGammaEconder::decode (const std::string& str)
+{
+    std::vector<int> res_list;
+    int i = 0;
+    while (i < str.size()) {
+        int res = 0;
+        int n_zeros = 0;
+        while(str[i] == '0') {
+            ++n_zeros;
+            ++i;
+        }
+
+        while (n_zeros >= 0) {
+            res = (res << 1) + (str[i++] - '0');
+            --n_zeros;
+        }
+        res_list.push_back(res);
+    }
+    return res_list;
+}
+
 int main (void)
 {
     EliasGammaEconder egc;
-    std::cout << egc.encode(13) << std::endl;
+    std::vector<int> numbers = {5, 5};
+    auto encoded_str = egc.encode(numbers);
+    auto decoded_n = egc.decode(encoded_str);
+    std::cout << encoded_str << std::endl;
+    std::cout << decoded_n << std::endl;
+
+
     return 0;
 }
 
