@@ -1,22 +1,38 @@
 #include <iostream>
+#include "../utils.hpp"
 #include <string>
+#include <stdexcept>
 
 
-
-
-int ssDevodeCollID (const std::string &str)
+int ssDecodeColID (const std::string& str)
 {
-    int val = 0;
+    int id = 0;
     for (const auto c: str) {
-        val = val*26 + (c-'A' + 1);
+        if (c < 'A' || c > 'Z') {
+            throw std::invalid_argument("id not valid");
+        }
+        id = id * 26 + c - 'A' + 1;
     }
-    return val;
+    return id;
 }
 
-
-int main (void)
+int main (int argc, char* argv[]) 
 {
-    std::string s("AA");
-    std::cout << ssDevodeCollID(s) << std::endl;
+    if (argc != 2) {
+        error("usage: %s id", argv[0]);
+        return 0;
+    }
+    std::string id_str(argv[1]);
+    try {
+        int id = ssDecodeColID(id_str);
+        std::cout << id_str << " corresponds to " << id << std::endl;
+
+    
+    } catch (const std::invalid_argument& ia) {
+        error("%s", ia.what());
+        return 1;
+    }
     return 0;
 }
+
+

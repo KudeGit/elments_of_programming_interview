@@ -10,6 +10,7 @@
 #include <list>
 #include <unordered_map>
 #include <unordered_set>
+#include <stdio.h>
 #include <tuple>
 
 
@@ -69,5 +70,7 @@ std::ostream& operator<< (std::ostream& out, const std::tuple<T,T> &t)
 }
 
 #define debug(x) do{std::cout << #x <<": " << x << std::endl; std::cin.get();}while(0)
+#define error(fmt, ...) fprintf(stderr, fmt"\n", ##__VA_ARGS__)
+#define print(x) std::cout << #x": " << x << std::endl;
 
 #endif

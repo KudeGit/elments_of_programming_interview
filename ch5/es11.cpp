@@ -1,32 +1,36 @@
 #include <iostream>
 #include <cmath>
+#include <string>
 #include "../utils.hpp"
 
-bool isNPalindorme (const int n)
-{
-    if (n < 0) {
-        return false;
-    }
-    int n_digits = static_cast<int>(std::log10(n))  + 1;
-    int n2 = n_digits/2;
-    int low = n % static_cast<int>(std::pow(10, n2 ));
-    int high = n / static_cast<int>(std::pow(10, n_digits - n2));
 
-    for (int i = 0; i < n2; ++i) {
-        if ( (low % 10) != (high/static_cast<int>(pow(10, n2 - i - 1)))) {
+bool isNPalindorme (int n)
+{
+    int n_digits = static_cast<int>(log10(n)) + 1;
+    int msd_mask = static_cast<int>(pow(10, n_digits-1));
+    int nn = n;
+    for (int i = 0; i < n_digits >> 1; ++i) {
+        int lsd = n % 10;
+        n /= 10;
+        int msd = nn / msd_mask;
+        nn %= msd_mask;
+        msd_mask /= 10;
+        if(lsd != msd) {
             return false;
         }
-        low /= 10;
-        high %= static_cast<int>(pow(10, n2 - i - 1));
     }
     return true;
 }
 
 
-int main (void)
+
+int main (int argc, char* argv[]) 
 {
-    std::cout << isNPalindorme(123454321) << std::endl;
-    std::cout << isNPalindorme(1234554321) << std::endl;
-    std::cout << isNPalindorme(1234554320) << std::endl;
-    return 0;
+    if (argc != 2) {
+        error("usage: %s <number>", argv[0]);
+        return 1;
+    }
+    int n = std::stoi(std::string(argv[1]));
+
+    std::cout << n << " is palindrome? " << isNPalindorme(n) << std::endl;
 }

@@ -2,126 +2,154 @@
 #include <unordered_map>
 #include <string>
 #include <algorithm>
+#include "../utils.hpp"
 
-struct Convert {
-    static std::unordered_map<char, int> char2val;
-    static std::unordered_map<char, int> val2char;
-    long int val;
-    void atoi (const std::string& s, int b);
-    std::string itoa(int b);
-    std::string convert (const std::string& str, int b1, int b2);
+struct Convert 
+{
+    static std::unordered_map<char, int> char_to_digit;
+    static std::unordered_map<char, int> digit_to_char;
+    static const std::string invalid_input_str;
+    static const std::string invalid_base_value;
+    std::string convert (const std::string& str, 
+                         const int b1,
+                         const int b2);
+    int atoi (const std::string& str, const int base);
+    std::string itoa(const int n, const int b);
 };
 
-std::string Convert::convert (const std::string& str, int b1, int b2)
+const std::string Convert::invalid_input_str("string does not represent a valid number");
+const std::string Convert::invalid_base_value("invalid base value");
+
+int Convert::atoi(const std::string& str, const int b)
 {
-    atoi(str, b1);
-    return itoa(b2);
-}
-
-
-
-void Convert::atoi (const std::string& s, int b)
-{
-    val = 0;
-    int i =0;
+    int n = 0;
+    int start = 0;
     bool is_negative = false;
-    if (s[0] == '-') {
-        is_negative = true;
-        ++i;
-    } 
-    if (s[0] == '+') {
-        ++i;
+
+    if (b < 2 || b > 16) {
+        throw std::invalid_argument(invalid_base_value);
     }
-    for (; i<s.size(); ++i) {
-        auto c = s[i];
-        auto it = Convert::char2val.find(c);
-        if (it == Convert::char2val.end()) {
-            std::cout << c <<" input char not known..." << std::endl;
-            return;
+    if(str[0] == '-') {
+        start = 1;
+        if(str.size() == 1) {
+            throw std::invalid_argument(invalid_input_str);
         }
-        if (Convert::char2val[c] > b) {
-            std::cout << "Impossible converting " << s << " in base " << b << std::endl;
+        is_negative = true;
+    }
+    for (int i = start; i < str.size(); ++i) {
+        char c = toupper(str[i]);
+        if(char_to_digit.find(c) == char_to_digit.end()) {
+            throw std::invalid_argument(invalid_input_str);
         }
-        val = val * b + Convert::char2val[c];
+
+        int d = char_to_digit[c];
+        if (d >= b) {
+            throw std::invalid_argument(invalid_input_str);
+        }
+        n = n*b + d;
     }
     if (is_negative) {
-        val *= -1;
+        n = -n;
     }
+    return n;
 }
-
-
-std::string Convert::itoa(int b)
+std::string Convert::itoa (int n, const int b)
 {
-    std::string out_str;
-    bool is_negative = false;
-    if (val < 0) {
+    std::string res;
+    bool is_negative;
+    if (b < 2 || b > 16) {
+        throw std::invalid_argument(invalid_base_value);
+    }
+
+    if(n < 0) {
+        n = -n;
         is_negative = true;
-        val *= -1;
     }
-    while (val) {
-        out_str.push_back(Convert::val2char[val%b]);
-        val /= b;
+
+    while (n) {
+        int d = n % b;
+        if(digit_to_char.find(d) == digit_to_char.end()) {
+            throw std::invalid_argument(invalid_input_str);
+        }
+        n /= b;
+        res.push_back(digit_to_char[d]);
     }
-    if (is_negative) {
-        out_str.push_back('-');
+    if(is_negative) {
+        res.push_back('-');
     }
-    std::reverse(out_str.begin(), out_str.end());
-    return out_str;
+    std::reverse(res.begin(), res.end());
+    return res;
 }
 
-std::unordered_map<char, int> Convert::val2char  {
-        {0, '0'},
-        {1, '1'},
-        {2, '2'},
-        {3, '3'},
-        {4, '4'},
-        {5, '5'},
-        {6, '6'},
-        {7, '7'},
-        {8, '8'},
-        {9, '9'},
-        {10, 'A'},
-        {11, 'B'},
-        {12, 'C'},
-        {13, 'D'},
-        {14, 'E'},
-        {15, 'F'}
-};
-
-std::unordered_map<char, int> Convert::char2val  {
-                                                    {'0', 0},
-                                                    {'1', 1},
-                                                    {'2', 2},
-                                                    {'3', 3},
-                                                    {'4', 4},
-                                                    {'5', 5},
-                                                    {'6', 6},
-                                                    {'7', 7},
-                                                    {'8', 8},
-                                                    {'9', 9},
-                                                    {'A', 10},
-                                                    {'B', 11},
-                                                    {'C', 12},
-                                                    {'D', 13},
-                                                    {'E', 14},
-                                                    {'F', 15},
-                                                    {'a', 10},
-                                                    {'b', 11},
-                                                    {'c', 12},
-                                                    {'d', 13},
-                                                    {'e', 14},
-                                                    {'f', 15}
-                                                   };
-
-
-
-
-int main (void)
+std::string Convert::convert (const std::string& str, 
+        const int b1,
+        const int b2)
 {
-    Convert c;
-    std::string s("10");
-    c.atoi(s, 10);
-    std::cout << c.val << std::endl;
-    std::cout << c.itoa(2) << std::endl;
+    try {
+        int n = atoi (str, b1);
+        return itoa(n, b2);
+    } catch (const std::invalid_argument& ia) {
+        throw ia;
+    }
+}
+
+std::unordered_map<char, int> Convert::char_to_digit = {
+    {'0', 0},
+    {'1', 1},
+    {'2', 2},
+    {'3', 3},
+    {'4', 4},
+    {'5', 5},
+    {'6', 6},
+    {'7', 7},
+    {'8', 8},
+    {'9', 9},
+    {'A', 10},
+    {'B', 11},
+    {'C', 12},
+    {'D', 13},
+    {'E', 14},
+    {'F', 15}};
+
+
+std::unordered_map<char, int> Convert::digit_to_char = {
+    {0,  '0'},
+    {1,  '1'},
+    {2,  '2'},
+    {3,  '3'},
+    {4,  '4'},
+    {5,  '5'},
+    {6,  '6'},
+    {7,  '7'},
+    {8,  '8'},
+    {9,  '9'},
+    {10, 'A'},
+    {11, 'B'},
+    {12, 'C'},
+    {13, 'D'},
+    {14, 'E'},
+    {15, 'F'}};
+
+
+
+int main (int argc, char* argv[])
+{
+    if (argc != 4) {
+        error("usage: %s number base1 base2", argv[0]);
+        return 1;
+    }
+    std::string str(argv[1]);
+    int base1 = std::stoi(std::string(argv[2]));
+    int base2 = std::stoi(std::string(argv[3]));
+    Convert convert;
+    try {
+        std::string res;
+        res = convert.convert(str, base1, base2);
+        std::cout << str << " in base " << base2 << " is " << res << std::endl;
+    } catch(const std::invalid_argument& ia) {
+        error("%s", ia.what());
+        return 1;
+    }
     return 0;
 }
+

@@ -13,12 +13,12 @@ void swapBit (size_t& a, size_t i, size_t j)
     setBit(a, j, ith_bit);
     return;
 }
-void swapBit2(size_t& a, size_t i, size_t j)
+void swapBit2 (size_t& a, int i, int j)
 {
-    if (((a>>i) & 0x01llu) == ((a>>j) & 0x01llu)) {
+    if(((a >> i) & 0x01llu) == ((a>>j) & 0x01llu)) {
         return;
     }
-    a ^= ((0x01llu) << i ) | ((0x01llu) << j);
+    a ^= (0x01llu << i) | (0x01llu << j);
 }
 
 

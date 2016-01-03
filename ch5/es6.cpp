@@ -1,37 +1,31 @@
 #include <iostream>
+#include <string>
 #include "../utils.hpp"
 
 unsigned int divide (unsigned int a, unsigned int b)
 {
-    if (b > a) {
-        return 0;
-    }
     int res = 0;
-    res += 1 + divide(a-b, b);
-    return res; 
-}
-
-
-unsigned int divideFast (unsigned int a, unsigned int b)
-{
-    if (a < b) {
-        return 0;
-    } 
-    int res = 0;
-    // looking for k such that 2^k*y < x;
-    unsigned int power = 1;
-    while ( ((b << power) <= a)) {
-        ++power;
+    while (a >= b) {
+        int pow = 1;
+        while ((b << pow) < (b << (pow + 1)) && ((b << pow) < a)) {
+            ++pow;
+        }
+        res += 1 << (pow - 1);
+        a -= b << (pow - 1);
     }
-    res += (0x01u << (power-1)) + divideFast(a - (b << (power-1)), b);
     return res;
 }
 
 
-int main (void)
+int main (int argc, char* argv[])
 {
-    int a = 93;
-    int b = 5;
-    std::cout << divideFast(a,b) << " == " << a/b << std::endl;
+    if (argc != 3) {
+        error("usage: %s <a> <b>", argv[0]);
+        return 1;
+    }
+    int a = std::stoi(std::string(argv[1]));
+    int b = std::stoi(std::string(argv[2]));
+
+    std::cout << divide(a,b) << " == " << a/b << std::endl;
     return 0;
 }

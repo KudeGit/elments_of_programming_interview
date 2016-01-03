@@ -2,37 +2,63 @@
 #include <random>
 #include <cassert>
 #include <chrono>
+#include <stdexcept>
+#include <string>
 #include "../utils.hpp"
 
 int random_a_b (int a, int b)
 {
-    static unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    static std::default_random_engine g(seed);
-    static std::uniform_int_distribution<int> d(0,1);
-    int x = b - a;
-    int res = 0;
-    if (a > b) {
-        std::cout << "usage error:  a("<< a << ") cannot be larger than b(" << b <<")" << std::endl;
+    if (b < a) {
+        throw std::invalid_argument("invalid interval");
+    }
+
+    std::random_device rd;
+    std::default_random_engine g(rd());
+    std::uniform_int_distribution<int> d(0,1);
+
+    int delta = b - a + 1;
+    int x = 0;
+    do {
+        x = 0;
+        for(int i = 0; (1 << i) < delta; ++i) {
+            int b = d(g);
+            x = (x << 1) | b;
+        }
+    } while(x >= delta);
+
+    return x + a;
+}
+
+int main (int argc, char* argv[])
+{
+    if (argc != 3) {
+        error("usage: %s <a> <b>", argv[0]);
         return -1;
     }
-    do{
-        res = 0;
-        for (int i = 0; (1 << i) <= x; ++i ) {
-            int r = d(g);
-            res = (res << 1) | r;
-        }
-    } while (res > x);
-    return a + res;
-}
-
-
-int main (void)
-{
-    for (int i = 0; i < 100; ++i) {
-        int r = random_a_b(10, 20);
-        std::cout << r << std::endl;
-        assert(r>=10 && r<=20);
+    int a = std::stoi(argv[1]);
+    int b = std::stoi(argv[2]);
+    if (b < a) {
+        error("invalid interval");
+        return 1;
     }
-    return 0;
+
+    try {
+        std::vector<double> stats(b - a + 1, 0);
+        int N = 10000*(b - a + 1);
+        for (int i = 0; i < N; ++i) {
+            int k = random_a_b(a,b);
+            assert( k >= a && k <= b);
+            stats[k-a]++;
+        }
+        for(int i = 0; i < stats.size(); ++i) {
+            stats[i] /= static_cast<double>(N);
+        }
+        std::cout << stats << std::endl;
+        return 0;
+    } catch (const std::invalid_argument& ia) {
+        error("%s", ia.what());
+        return 1;
+    }
 }
+
 
