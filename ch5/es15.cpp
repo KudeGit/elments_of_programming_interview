@@ -1,34 +1,37 @@
 #include <iostream>
 #include <algorithm>
+#include <string>
+#include "../utils.hpp"
 
 
-size_t GDC (size_t a, size_t b)
+size_t gdc (long long a, long long b)
 {
     if(a == 0) {
         return b;
-    }
-    if (b == 0) {
+    } else if (b == 0) {
         return a;
-    }
-    return GDC(std::max(a,b) - std::min(a,b), std::min(a,b));
-}
-size_t GDCfast (size_t a, size_t b)
-{
-    if (b == 0) {return a;}
-    if (a == 0) {return b;}
-    if ((a & 0x01llu) && (b & 0x01llu)) {
-        return GDCfast(a >> 1, b >> 1) << 1;
-    } else if (a & 0x01llu) {
-        return GDCfast(a >> 1, b);
-    } else if (b & 0x01llu) {
-        return GDCfast(a, b >> 1) << 1;
+    } else if (!(a & 0x01ll) && !(b & 0x01ll)) {
+        return gdc(a >> 1, b >> 1) << 1;
+    } else if (a & 0x01ll && !(b & 0x01ll)) {
+            return gdc(a, b >> 1);
+    } else if (b & 0x01ll && !(a & 0x01ll)) {
+        return gdc(a >> 1, b);
+    } else if (a > b) {
+        return gdc(a - b, b);
     } else {
-        return  GDCfast(std::max(a,b) - std::min(a,b), std::min(a,b));
+        return gdc(a, b - a);
     }
 }
 
-int main (void)
+
+int main (int argc, char* argv[])
 {
-    std::cout << GDCfast(10, 20) << std::endl;
+    if(argc != 3) {
+        error("usage: %s <a> <b>", argv[0]);
+        return 1;
+    }
+    int a = std::stoi(argv[1]);
+    int b = std::stoi(argv[2]);
+    std::cout << "gdc(" << a << ", " << b << "): " << gdc(a,b) << std::endl;
     return 0;
 }
