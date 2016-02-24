@@ -7,12 +7,12 @@ template <class T>
 void unique (std::vector<T> &A) 
 {
     int j = 0;
-    for (int i = 1; i < A.size(); ++i) {
-        if(A[i] != A[j]) {
+    for (int i = 1; i< A.size(); ++i) {
+        if(A[j] != A[i]) {
             A[++j] = A[i];
         }
     }
-    while (A.size() > j+1) {
+    while(A.size() > j+1) {
         A.pop_back();
     }
 }

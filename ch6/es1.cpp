@@ -5,13 +5,14 @@
 #include "../utils.hpp"
 
 
-void dutch_flag (std::vector<int>& A, int k)
+template <class T>
+void dutch_flag (std::vector<T>& A, int idx)
 {
-    int pivot = A[k];
-    int low = 0, equal = 0, larger = A.size() - 1;
+    T pivot = A[idx];
+    int lower = 0, equal = 0, larger = A.size() - 1;
     while (equal <= larger) {
-        if(A[equal] < pivot) {
-            std::swap(A[equal++], A[low++]);
+        if (A[equal] < pivot) {
+            std::swap(A[equal++], A[lower++]);
         } else if (A[equal] == pivot) {
             ++equal;
         } else {
@@ -20,50 +21,40 @@ void dutch_flag (std::vector<int>& A, int k)
     }
 }
 
-template <class T>
-void three_keys(std::vector<char>& A, const std::vector<T>& keys)
-{
-    if(keys.size() != 3) {
-        return;
-    }
-    int key1 = 0, key2 =0, key3 = A.size() - 1;
-    while (key2 <= key3) {
-        if(A[key2] == keys[0]) {
-            std::swap(A[key1++], A[key2++]);
-        } else if(A[key2] == keys[1]) {
-            ++key2;
-        } else if (A[key2] == keys[2]) {
-            std::swap(A[key2], A[key3--]);
-        } else {
-            std::cout << "more than 3 keys... aborting grouping" << std::endl;
-            return;
-        }
-    }
-}
+
 
 int main (void)
 {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1,5);
 
-    std::default_random_engine g(std::chrono::system_clock::now().time_since_epoch().count());
-    std::uniform_int_distribution<int> d(1,6);
-    std::vector<int> A;
-    for (int i = 0; i< 15; ++i) {
-        A.push_back(d(g));
+    std::vector<int> A = {6,6,4,4,3,3,2,2,1,1};
+    std::vector<int> B = {1,2,3,4,5,6,7,8,9,10};
+    std::vector<int> C = {};
+
+
+    for (int i = 0; i < 20; ++i) {
+        C.push_back(dis(gen));
     }
+    int pivot = A[3];
     std::cout << A << std::endl;
-    int k = 10;
-    std::cout << "pivot: " << A[k] << std::endl;
-    dutch_flag(A, k);
-    std::cout << A << std::endl;
+    dutch_flag(A, 3);
+    std::cout << pivot << ": " <<A << std::endl;
+    
 
-
-    std::vector<char> B = {'a','b','c','a','c','b','b','a','c'};
+    pivot = B[3];
     std::cout << B << std::endl;
-    std::vector<char> keys = {'a', 'b', 'c'};
-    three_keys(B, keys);
-    std::cout << B << std::endl;
+    dutch_flag(B, 3);
+    std::cout << pivot << ": " <<B << std::endl;
+
+    pivot = C[3];
+    std::cout << C << std::endl;
+    dutch_flag(C, 3);
+    std::cout << pivot << ": " <<C << std::endl;
+    
+    return 0;
 
 
-    return  0;
 }
 

@@ -4,17 +4,14 @@
 
 bool can_you_win (const std::vector<int>& A)
 {
-    int max_reacheable_pos = 0;
-    for (int i = 0; i < A.size(); ++i) {
-        if (A[i] > 0) {
-            max_reacheable_pos = std::max(A[i]+i, max_reacheable_pos);
-        } else {
-            if(max_reacheable_pos <= i) {
-                return false;
-            }
+    int reacheable_pos = A[0];
+    for (int i = 1; i < A.size(); ++i) {
+        if(i > reacheable_pos) {
+            return false;
         }
+        reacheable_pos = std::max(reacheable_pos, A[i]+i);
     }
-    return max_reacheable_pos >= (A.size()-1);
+    return true;
 }
 
 int main (void)

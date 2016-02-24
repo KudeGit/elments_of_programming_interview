@@ -66,6 +66,8 @@ class Rectangle {
         Rectangle (const Rectangle &r);
         Rectangle (Rectangle &&r);
         ~Rectangle() {
+            delete bl;
+            delete tr;
             error("Rectangle destructor");
         }
 };

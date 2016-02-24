@@ -4,75 +4,96 @@
 #include <limits>
 #include "../utils.hpp"
 
-int find_max_difference (const std::vector<int>& A)
+
+
+int find_max_diff (const std::vector<int> &A)
 {
+    int max_diff = 0; 
+    int c_min = A[0];
+    for (const auto &a: A) {
+        max_diff = std::max(max_diff, a - c_min);
+        c_min = std::min(c_min, a);
+    }
+    return max_diff;
+}
+
+int find_max_diff_2 (const std::vector<int>& A)
+{
+    std::vector<int> max_f(A.size(), std::numeric_limits<int>::min());
+    std::vector<int> max_b(A.size(), std::numeric_limits<int>::min());
+    int c_min = A[0];
     int max_diff = std::numeric_limits<int>::min();
-    int min_index = 0;
-    for (int i = 1; i < A.size(); ++i) {
-        if(A[i] < A[min_index]) {
-            min_index = i;
-        } else if (max_diff < A[i] - A[min_index]) {
-            max_diff = A[i] - A[min_index];
+    for (int i = 0; i < A.size(); ++i) {
+        max_diff = std::max(max_diff, A[i] - c_min);
+        c_min = std::min(c_min, A[i]);
+        max_f[i] = max_diff;
+    }
+    int c_max = A.back();
+    c_min = A.back();
+    max_diff = std::numeric_limits<int>::min();
+    for (int i = A.size() - 1; i >= 0; --i) {
+        if(A[i] > c_max) {
+            c_max = A[i];
+            c_min = A[i];
+        }
+        c_min = std::min(c_min, A[i]);
+        max_diff = std::max(max_diff, c_max - c_min);
+        max_b[i] = max_diff;
+    }
+    max_diff = std::numeric_limits<int>::min();
+    debug(max_f);
+    debug(max_b);
+    for (int i = 1; i < A.size() - 1; ++i) {
+        max_diff = std::max(max_diff, 
+                std::max(max_f[i-1] + max_b[i], max_f[i] + max_b[i+1]));
+    }
+    return max_diff;
+}
+
+int find_max_diff_k (const std::vector<int>& A, int k)
+{
+    std::vector<int> sum_k(k << 1, std::numeric_limits<int>::min());
+    for (int i = 0; i < A.size(); ++i) {
+        std::vector<int> pre_sum_k(sum_k);
+        for(int j = 0, sign = -1; j < sum_k.size() && j <= i; ++j, sign *= -1) {
+            int diff = sign * A[i] + (j == 0 ? 0 : pre_sum_k[j-1]);
+            sum_k[j] = std::max(pre_sum_k[j], diff);
         }
     }
-    return max_diff;
+    return sum_k.back();
 }
 
-int find_max_difference2 (const std::vector<int>& A)
+int find_max_diff_any_k (const std::vector<int>& A) 
 {
-    if (A.empty()) {
-        return std::numeric_limits<int>::min();
+    int profit = 0;
+    int buy = A[0];
+    for (int i = 1; i < A.size() - 1; ++i) {
+        if (A[i]< A[i-1] && A[i] <= A[i+1]) {
+            buy = A[i];
+        } else if(A[i] >= A[i-1] && A[i] > A[i+1]) {
+            profit += A[i] - buy;
+            buy = A[i+1];
+        }
     }
-    int max_diff = std::numeric_limits<int>::min();
-    int min_val = A[0];
-    for (const auto &a: A){
-        max_diff = std::max(max_diff, a - min_val);
-        min_val = std::min(min_val, a);
+    if(buy < A.back()) {
+        profit += A.back() - buy;
     }
-    return max_diff;
+    return profit;
 }
-
-
-int find_max_difference_2D (const std::vector<int>& A)
-{
-    std::vector<int> forward_max_diff (A.size(), std::numeric_limits<int>::min());
-    std::vector<int> backward_max_diff (A.size(), std::numeric_limits<int>::min());
-    //forward direction
-    int max_diff = std::numeric_limits<int>::min();
-    int min_val = A[0];
-    for (int i = 0; i < A.size(); ++i) {
-        max_diff = std::max(max_diff, A[i] - min_val);
-        min_val = std::min(A[i], min_val);
-        forward_max_diff[i] = max_diff;
-    }
-    max_diff = std::numeric_limits<int>::min();
-    min_val = A.back();
-    for (int i = A.size() - 1; i >=0 ; --i) {
-        max_diff = std::max(max_diff, A[i] - min_val);
-        min_val = std::min(A[i], min_val);
-        backward_max_diff[i] = max_diff;
-    }
-    max_diff = std::numeric_limits<int>::min();
-    for (int i = 0 ; i < A.size(); ++i) {
-        max_diff = std::max(max_diff, forward_max_diff[i] + backward_max_diff[i]);
-    }
-    return max_diff;
-}
-
-
 
 int main (void)
 {
     std::vector<int> A = {2, 3, 10, 6, 4, 8, 1};
     std::vector<int> B = {7, 9, 5, 6, 3, 2};
+    std::vector<int> C = {1,2,3,4,5,6,7,8,9,10};
 
-    //std::cout << find_max_difference(A) << std::endl;
-    //std::cout << find_max_difference2(A) << std::endl;
-    //std::cout << find_max_difference(B) << std::endl;
-    //std::cout << find_max_difference2(B) << std::endl;
-    
-    std::cout << find_max_difference_2D(A) << std::endl;
-    std::cout << find_max_difference_2D(B) << std::endl;
+    std::cout << A << std::endl;
+    std::cout << find_max_diff(A) << std::endl;
+    std::cout << find_max_diff_k(A,1) << std::endl;
+
+    std::cout << B << std::endl;
+    std::cout << find_max_diff_2(B) << std::endl;
+    std::cout << find_max_diff_k(B,2) << std::endl;
 
 
     return 0;

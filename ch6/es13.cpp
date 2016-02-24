@@ -7,20 +7,20 @@ template <class T>
 void permutate (std::vector<T>& A, std::vector<int>& P)
 {
     for (int i = 0; i < A.size(); ++i) {
-        if(P[i] >= 0) {
+        if (P[i] >= 0) {
             int a = i;
-            int tmp = A[a];
-            do{
+            T tmp = A[a];
+            do {
                 int next_a = P[a];
-                P[a] -= P.size();
-                int next_tmp = A[next_a];
+                T next_tmp = A[next_a];
                 A[next_a] = tmp;
+                P[a] -= P.size();
+                a = next_a; 
                 tmp = next_tmp;
-                a = next_a;
-            }while(a != i);
+            }while (a != i);
         }
     }
-    for_each (P.begin(), P.end(), [&](int &x){ x += P.size();});
+    for_each(P.begin(), P.end(), [&](int &x) { x += P.size(); });
 }
 
 int main (void)

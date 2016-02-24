@@ -12,6 +12,21 @@
 #include <unordered_set>
 #include <stdio.h>
 #include <tuple>
+#include <string>
+
+
+void banner(const std::string& s) 
+{
+    int l = (80 - s.size() + 2) >> 1;
+    std::cout << std::string(l, '#') << ' ' << s 
+        << ' ' << std::string(l, '#') << std::endl;
+
+}
+
+void banner (void)
+{
+    banner(std::string());
+}
 
 
 template <typename T, std::size_t M, std::size_t N>
