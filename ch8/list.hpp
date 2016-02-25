@@ -6,9 +6,15 @@ template <class T>
 struct ListNode {
     T data;
     std::shared_ptr<ListNode<T>> next = nullptr;
-    ListNode<T> (T d) : data(d), next(nullptr) {}
+    ListNode<T> (const T& d) : data(d), next(nullptr) {}
+    ListNode<T> (const ListNode<T>& other) : data (other.data), next (nullptr) {}
+    ListNode<T> (ListNode<T>&& other) : data(std::move(other.data)), next (nullptr) {}
     ~ListNode<T>() {}
 };
+
+
+
+
 template<class T>
 std::ostream& operator<< (std::ostream& out, const ListNode<T>& node)
 {
@@ -56,7 +62,26 @@ struct List {
     void insert_front (T data);
     void push_back (T data);
     std::shared_ptr<ListNode<T>> get_tail (void);
+    void reverse(void);
+    List<T>() : head(nullptr) {}
+    List<T>(std::shared_ptr<ListNode<T>>& a) : head(a) {}
 };
+
+template <class T>
+void List<T>::reverse(void)
+{
+    auto curr = head;
+    auto prev = head;
+    auto next = head;
+    prev = nullptr;
+    while (curr) {
+        next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
+    }
+    head = prev;
+}
 
 template <class T>
 std::shared_ptr<ListNode<T>> List<T>::get_tail (void)
