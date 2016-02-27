@@ -31,3 +31,8 @@
 #swap file
 *.swp
 *.*.swp
+
+
+#others
+a.*
+.DS_Store

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <random>
+#include <string>
 
 template <class T>
 struct ListNode {
@@ -142,6 +143,18 @@ List<T> create_and_populate_list (const int start, const int N)
     return l;
 }
 
+List<int> create_and_populate_list_random (const int start, const int end, const int N)
+{
+    List<int> l;
+    std::random_device rd;
+    std::default_random_engine g(rd());
+    std::uniform_int_distribution<int> d(start, end);
+    for (int i = 0; i < N; ++i) {
+        l.push_back(d(g));
+    }
+    return l;
+}
+
 
 template <class T>
 List<T> create_and_populate_list_with_duplicates (const int start, 
@@ -243,4 +256,17 @@ void create_loop (List<T>& l, const int pos)
     }
     x->next = y;
     return;
+}
+
+
+
+template <class T>
+void print_list_from_node (const std::string &str, std::shared_ptr<T> x)
+{
+    std::cout << str;
+    while (x) {
+        std::cout << *x << ", ";
+        x = x->next;
+    }
+    std::cout << std::endl;
 }
