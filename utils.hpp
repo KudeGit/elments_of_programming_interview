@@ -13,6 +13,9 @@
 #include <stdio.h>
 #include <tuple>
 #include <string>
+#include <fstream>
+#include <stdexcept>
+#include <algorithm>
 
 
 void banner(const std::string& s) 
@@ -83,6 +86,26 @@ std::ostream& operator<< (std::ostream& out, const std::tuple<T,T> &t)
     out << "(" << std::get<0>(t) << ", " << std::get<1>(t) << ")"; 
     return out;
 }
+
+
+
+std::unordered_set<std::string> load_dictionary (const std::string& dict_name = "/usr/share/dict/words")
+{
+    std::ifstream fdicionary(dict_name);
+    if (!fdicionary.good()) {
+        throw std::invalid_argument("cannot open dictionary file");
+    }
+    std::string word;
+    std::unordered_set<std::string> words;
+    while(getline(fdicionary, word)) {
+        std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+        if (words.find(word) == words.end()) {
+            words.insert(word);
+        }
+    }
+    return words;
+}
+
 
 #define debug(x) do{std::cout << #x <<": " << x << std::endl; std::cin.get();}while(0)
 #define error(fmt, ...) fprintf(stderr, fmt"\n", ##__VA_ARGS__)
