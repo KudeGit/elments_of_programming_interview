@@ -44,11 +44,22 @@ std::ostream& operator<< (std::ostream& out, T (&A)[M][N])
     return out;
 }
 
+
+
 template <typename T>
 std::ostream& operator<< (std::ostream& out, const std::vector<T> &L)
 {
     for (const auto &l: L) {
         out << l << ", ";
+    }
+    return out;
+}
+
+template <typename T>
+std::ostream& operator<< (std::ostream& out, const std::vector<std::vector<T>> &L)
+{
+    for (const auto &l: L) {
+        out << l << std::endl ;
     }
     return out;
 }
