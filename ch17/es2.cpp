@@ -1,43 +1,30 @@
 #include <iostream>
+#include <string>
 #include <vector>
 #include "../utils.hpp"
 
-int count_ways (const std::vector<int>& plays, const int score)
+int edit_distance (const std::string& a, const std::string& b)
 {
-    std::vector<std::vector<int>> K(score+1, std::vector<int>(plays.size(), 0));
-
-    for (int i = 0; i < plays.size(); ++i) {
-        K[0][i] = 1;
+    std::vector<std::vector<int>> K(a.size() + 1, std::vector<int>(b.size() + 1));
+    for (int i = 0; i <= a.size(); ++i) {
+        K[i][0] = i;
     }
-    for (int s = 1; s<= score; ++s) {
-        for (int p = 0 ; p < plays.size(); ++p) {
-            K[s][p] = (plays[p] <= s ? K[s-plays[p]][p] : 0) + // combination including play p
-                (p > 0 ? K[s][p-1] : 0);
+    for (int i = 0; i <= b.size(); ++i) {
+        K[0][i] = i;
+    }
+    for (int i = 1; i <= a.size(); ++i) {
+        for (int j = 0; j <= b.size(); ++j) {
+            int dij = a[i] == b[j] ? 0 : 1;
+            K[i][j] = std::min(std::min(K[i-1][j] + 1, K[i][j-1] + 1), K[i-1][j-1] + dij);
         }
     }
     return K.back().back();
 }
 
-
-int count_ways_2 (const std::vector<int>& plays, const int score)
-{
-    std::vector<int> K(score + 1, 0);
-    K[0] = 1; //1 way to get zero;
-    for (const int p: plays) {
-        for (int s = p; s <= score; ++s) {
-            K[s] += K[s-p];
-        }
-    }
-    return K.back();
-}
-
-
 int main (void)
 {
-
-    std::vector<int> plays = {2, 3, 7};
-    std::cout << count_ways(plays, 12) << std::endl;
-    std::cout << count_ways_2(plays, 12) << std::endl;
+    std::string a("exponential");
+    std::string b("polynomial");
+    std::cout << edit_distance(a, b) << std::endl;
     return 0;
-
 }

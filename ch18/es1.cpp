@@ -38,7 +38,10 @@ struct comparator_hs
 std::shared_ptr<BTN> build_huffman_tree (std::vector<huffman_symbol>& symbols)
 {
     std::shared_ptr<BTN> root = nullptr;
-    std::priority_queue<std::shared_ptr<BTN>, std::vector<std::shared_ptr<BTN>>, comparator_hs> pq;
+    std::priority_queue<std::shared_ptr<BTN>, 
+        std::vector<std::shared_ptr<BTN>>, 
+        comparator_hs> pq;
+
     for (auto& symbol: symbols) {
         auto ptr_btn = std::make_shared<BTN>();
         ptr_btn->data = &symbol;

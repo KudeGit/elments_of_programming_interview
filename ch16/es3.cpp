@@ -23,14 +23,12 @@ void n_queens_helper (int n, int k,
         std::vector<int>& rows) {
 
     if (n == k) {
-        //debug(rows);
         res.emplace_back(rows);
         return;
     }
     for (int i = 0; i < n; ++i) {
         if (is_feasible(i, k, rows)) {
             rows[k] = i;
-            //debug(rows);
             n_queens_helper(n, k+1, res, rows);
             rows[k] = -1;
         }

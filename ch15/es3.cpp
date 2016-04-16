@@ -36,7 +36,7 @@ std::tuple<bool, BSTN<T>*> find_next_helper (std::unique_ptr<BSTN<T>>& root,
 
     std::tuple<bool, BSTN<T>*> x;
     if (elem == root->data) {
-        if(root->right) {
+        if (root->right) {
             auto next = get_minimum(root->right.get());
             return std::make_tuple(true, next);
         } else {

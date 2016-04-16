@@ -1,39 +1,39 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include "../utils.hpp"
 
-int find_idx_equal_val (const std::vector<int>& A)
+
+template <class T>
+int find_first_larger_than (const std::vector<T>& A, const T& K)
 {
-    int l = 0;
-    int r = A.size();
+    int l = 0, r = A.size() - 1;
+    int candidate = -1;
     while (l <= r) {
         int m = l + ((r - l) >> 1);
-        if (A[m] == m) {
-            return m;
+        if (A[m] > K) {
+            candidate = m;
+            r = m - 1;
         } else {
-            if (A[m] > m) {
-                 r = m - 1;
-            } else {
-                l = m + 1;
-            }
+            l = m + 1;
         }
     }
-    return -1;
+    return candidate;
 }
+
 
 
 int main (void)
 {
-    //                      0  1  2  3  4  5  6
-    std::vector<int> A1 = {-2, 0, 2, 3, 6, 7, 9};
-    std::vector<int> A2 = {-2, 0, 2, 4, 6, 7, 9};
-    std::vector<int> A3 = {-2, 0, 1, 4, 6, 7, 9};
-    int k = find_idx_equal_val(A1);
-    assert(k == 2 || k == 3);
-    k = find_idx_equal_val(A2);
-    assert(k == 2);
-    k = find_idx_equal_val(A3);
-    assert(k == -1);
+    std::vector<int> A  = {-14, -10, 2, 108, 108, 243, 285, 285, 285, 401};
+    int a = find_first_larger_than(A, 500);
+    assert(a == -1);
+    a = find_first_larger_than(A, 101);
+    assert(a == 3);
+    
+    banner("ALL GOOD");
     return 0;
+
+
 
 }

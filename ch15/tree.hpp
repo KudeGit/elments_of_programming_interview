@@ -99,3 +99,16 @@ void in_order_visit_no_rec (const std::unique_ptr<BSTN<T>>& root)
 }
 
 
+
+
+
+template <class T>
+void pre_order_visit (const std::unique_ptr<BSTN<T>>& root) 
+{
+    if (!root) {
+        return;
+    }
+    std::cout << root->data << ", ";
+    pre_order_visit(root->left);
+    pre_order_visit(root->right);
+}

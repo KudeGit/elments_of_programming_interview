@@ -1,4 +1,4 @@
-//Inspired:
+//C++ version of:
 //
 //A Regular Expression Matcher
 //Code by Rob Pike
@@ -21,7 +21,7 @@ bool match_star (const char c, const std::string& str, int a, const std::string&
             return 1;
         }
         ++a;
-    } while (str[a] == c || c == '.');
+    } while (a < str.size() && (str[a] == c || c == '.'));
 }
 
 
@@ -62,8 +62,8 @@ bool match (const std::string& str, const std::string& regex)
 
 int main (void)
 {
-    std::string str("ssssasadarrbsasasaacd");
-    std::string regex("sssa*");
+    std::string str("aa");
+    std::string regex("a*");
     int len = 0;
     std::cout << match(str, regex) << std::endl;
 

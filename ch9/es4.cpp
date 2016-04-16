@@ -5,7 +5,7 @@
 
 int max_length_with_matching_parenthesis (const std::string& str)
 {
-    std::stack<char> open_par_pos;
+    std::stack<int> open_par_pos;
     int last_good_start = 0;
     int max_length = 0;
     for (int i = 0; i < str.size(); ++i) {

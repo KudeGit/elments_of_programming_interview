@@ -4,7 +4,7 @@
 #include "../utils.hpp"
 
 template <class T>
-bool is_bst (const std::unique_ptr<BSTN<T>>& root, 
+bool is_bst (const std::unique_ptr<BSTN<T>>& root,
         T min, T max)
 {
     if (!root) {

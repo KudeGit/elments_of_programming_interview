@@ -32,6 +32,20 @@ void banner (void)
 }
 
 
+template <class T, class Y>
+std::ostream& operator<< (std::ostream& out, const std::pair<T,Y> f)
+{
+    out << "(" << f.first << ", " << f.second << ")";
+    return out;
+}
+
+template <typename T>
+std::ostream& operator<< (std::ostream& out, const std::tuple<T,T> &t)
+{
+    out << "(" << std::get<0>(t) << ", " << std::get<1>(t) << ")"; 
+    return out;
+}
+
 template <typename T, std::size_t M, std::size_t N>
 std::ostream& operator<< (std::ostream& out, T (&A)[M][N])
 {
@@ -46,7 +60,7 @@ std::ostream& operator<< (std::ostream& out, T (&A)[M][N])
 
 
 
-template <typename T>
+template <class T>
 std::ostream& operator<< (std::ostream& out, const std::vector<T> &L)
 {
     for (const auto &l: L) {
@@ -91,12 +105,7 @@ std::ostream& operator<< (std::ostream& out, const std::unordered_map<X,Y> &map)
     return out;
 }
 
-template <typename T>
-std::ostream& operator<< (std::ostream& out, const std::tuple<T,T> &t)
-{
-    out << "(" << std::get<0>(t) << ", " << std::get<1>(t) << ")"; 
-    return out;
-}
+
 
 
 

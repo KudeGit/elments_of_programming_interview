@@ -1,30 +1,33 @@
 #include <iostream>
-#include <string>
 #include <vector>
-#include "../utils.hpp"
 
-int edit_distance (const std::string& a, const std::string& b)
+int binomial (const int n, const int k)
 {
-    std::vector<std::vector<int>> K(a.size() + 1, std::vector<int>(b.size() + 1));
-    for (int i = 0; i <= a.size(); ++i) {
-        K[i][0] = i;
+//binomial (n,k) = binomial(n-1, k) + binomial (n-1, k-1);
+
+    std::vector<std::vector<int>> K(n+1, std::vector<int>(k+1, 0));
+    for (int i = 0; i <= k; ++i) {
+        K[0][i] = 0;                //C(0,k) = 0
     }
-    for (int i = 0; i <= b.size(); ++i) {
-        K[0][i] = i;
+    for (int i = 0; i <= n; ++i) {
+        K[i][0] = 1;                //C(n,0) = 1
     }
-    for (int i = 1; i <= a.size(); ++i) {
-        for (int j = 0; j <= b.size(); ++j) {
-            int dij = a[i] == b[j] ? 0 : 1;
-            K[i][j] = std::min(std::min(K[i-1][j] + 1, K[i][j-1] + 1), K[i-1][j-1] + dij);
+    for (int i = 0; i <= k; ++i) {
+        K[i][i] = 1;                //C(n,n) = 1
+    }
+
+    for (int i = 1; i <= n ; ++i) {
+        for (int j = 1; j <= k; ++j) {
+            K[i][j] = K[i-1][j] + K[i-1][j-1];
         }
     }
     return K.back().back();
 }
 
+
 int main (void)
 {
-    std::string a("exponential");
-    std::string b("polynomial");
-    std::cout << edit_distance(a, b) << std::endl;
+    int a = binomial(10, 5);
+    std::cout << a << std::endl;
     return 0;
 }
