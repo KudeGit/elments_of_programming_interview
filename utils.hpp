@@ -88,7 +88,24 @@ std::ostream& operator<< (std::ostream& out, const std::list<T> &L)
     return out;
 }
 
-template <typename T>
+
+template <class T>
+std::ostream& operator<< (std::ostream& out, std::pair<T,T>& p)
+{
+    out << "{" << p.first <<  ", " <<p.second << "}";
+    return out;
+}
+
+    template <class T, class U, class V>
+std::ostream& operator<< (std::ostream& out,  std::unordered_set<T, U, V> &L)
+{
+    for (const auto &l: L) {
+        out << l << ", ";
+    }
+    return out;
+}
+
+template <class T>
 std::ostream& operator<< (std::ostream& out,  std::unordered_set<T> &L)
 {
     for (const auto &l: L) {

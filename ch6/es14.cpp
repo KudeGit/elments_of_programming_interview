@@ -10,6 +10,9 @@ std::vector<int> get_next_perm (std::vector<int> A)
     while (k >= 0 && A[k] > A[k+1]) {
         --k;
     }
+    if(k == -1) {
+        return {};
+    }
     int l = -1;
     for (int i = k+1; i < A.size(); ++i) {
         if(A[i] > A[k]) {
@@ -19,7 +22,7 @@ std::vector<int> get_next_perm (std::vector<int> A)
         }
     }
     std::swap(A[k], A[l]);
-    std::reverse(A.begin() + k + 1, A.begin() + l +1);
+    std::reverse(A.begin() + k + 1, A.end());
     return A;
 }
 
@@ -49,7 +52,9 @@ int main (void)
         A = get_next_perm(A);
         std::cout << A << std::endl;
     }
+    return 0;
 
+    /*
     std::cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxx" << std::endl;
     std::cout << A << std::endl;
     for (int i= 0; i < 10; ++i) {
@@ -61,5 +66,6 @@ int main (void)
     }
 
     return 0;
+    */
 }
 

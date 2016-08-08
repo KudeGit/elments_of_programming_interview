@@ -1,30 +1,38 @@
 #include <iostream>
-#include <string>
 #include <vector>
+#include <string>
 #include "../utils.hpp"
 
-int edit_distance (const std::string& a, const std::string& b)
+
+
+int min_edit_distance (const std::string& A,
+        const std::string& B) 
 {
-    std::vector<std::vector<int>> K(a.size() + 1, std::vector<int>(b.size() + 1));
-    for (int i = 0; i <= a.size(); ++i) {
-        K[i][0] = i;
+    std::vector<std::vector<int>> dist(A.size() + 1,
+            std::vector<int> (B.size() + 1, 0));
+    for (int i = 0; i <= A.size(); ++i) {
+        dist[i][0] = i;
     }
-    for (int i = 0; i <= b.size(); ++i) {
-        K[0][i] = i;
+    for (int j = 0; j <= B.size(); ++j) {
+        dist[0][j] = j;
     }
-    for (int i = 1; i <= a.size(); ++i) {
-        for (int j = 0; j <= b.size(); ++j) {
-            int dij = a[i] == b[j] ? 0 : 1;
-            K[i][j] = std::min(std::min(K[i-1][j] + 1, K[i][j-1] + 1), K[i-1][j-1] + dij);
+    for (int i = 1; i <= A.size(); ++i) {
+        for (int j = 1; j <= B.size(); ++j) {
+            int d_ij = A[i-1] == B[j-1] ? 0 : 1;
+            dist[i][j] = std::min(
+                    std::min(dist[i-1][j] + 1,dist[i][j-1] + 1),
+                    dist[i-1][j-1] + d_ij);
         }
     }
-    return K.back().back();
+    return dist.back().back();
 }
+
 
 int main (void)
 {
-    std::string a("exponential");
-    std::string b("polynomial");
-    std::cout << edit_distance(a, b) << std::endl;
+    std::string s1("saturday");
+    std::string s2("sunday");
+    auto res = min_edit_distance(s1, s2);
+    std::cout << res << std::endl;
     return 0;
 }

@@ -1,33 +1,87 @@
 #include <iostream>
-#include <vector>
+#include <unordered_set>
 #include "../utils.hpp"
 
-int knapsack (
-        const std::vector<int>& V,
-        const std::vector<int>& W,
-        const int C)
-{
-    std::vector<std::vector<int>> K(C+1, std::vector<int>(V.size()+1, 0));
+struct Jug {
+    int low, high;
+};
 
-    for (int w = 0; w <= C; ++w) {
-        for (int i = 0; i < V.size(); ++i) {
-            K[w][i+1] = w - W[i] >= 0 ? 
-                std::max(K[w - W[i]][i] + V[i], K[w][i]) :
-                K[w][i];
+std::ostream& operator<< (std::ostream& out, const Jug& j)
+{
+    out << "(" << j.high << ", " << j.low << ")";
+    return out;
+}
+
+struct KeyHash {
+    size_t operator() (const std::pair<int, int>& A) const {
+        return std::hash<int>()(A.first) ^ std::hash<int>()(A.second);
+    }
+};
+
+struct KeyEqual {
+    bool operator() (const std::pair<int, int>& A, const std::pair<int, int>& B) const {
+        return A.first == B.first && A.second == B.second;
+    }
+};
+
+void find_sequence_helper(const std::vector<Jug>& jugs, const int H, const int L, 
+        std::vector<Jug>& current, std::vector<Jug>& res,
+        std::unordered_set<std::pair<int, int>, KeyHash, KeyEqual>& cache) {
+
+    std::pair<int, int> hl = {H, L};
+    if (cache.find(hl) != cache.end()) {
+        return;
+    }
+    if (H < 0 || L < 0 || L > H) {
+        return;
+    }
+
+    for (const auto& j: jugs) {
+        if (L <= j.low && H >= j.high) {
+            res = current;
+            res.emplace_back(j);
+            return;
+        } else {
+            if(res.empty()) {
+                current.emplace_back(j);
+                find_sequence_helper(jugs, H - j.high, L - j.low,
+                        current, res, cache);
+                current.pop_back();
+            } else {
+                return;
+            }
         }
     }
-    return K.back().back();
+    cache.insert(hl);
+}
+
+std::vector<Jug> find_sequence(const std::vector<Jug> jugs,
+        const int H, const int L)
+{
+    std::unordered_set<std::pair<int, int>, KeyHash, KeyEqual> cache;
+    std::vector<Jug> current;
+    std::vector<Jug> res;
+    find_sequence_helper(jugs, H, L, current, res, cache);
+    return res;
 
 }
 
 
 int main (void)
 {
+    std::vector<Jug> jugs = {
+        {230, 240}, {290, 310}, {500, 515}
+    };
 
-    std::vector<int> V = {8,1,0,5,3};
-    std::vector<int> W = {1,2,3,2,2};
-    int C = 4;
-    auto max_value = knapsack(V, W, C);
-    std::cout << max_value << std::endl;
+    auto res = find_sequence(jugs, 2300, 2100);
+    int min = 0, max = 0;
+    for (const auto& r : res) {
+        min += r.low;
+        max += r.high;
+    }
+    std::cout << res << std::endl;
+    std::cout <<"min: " << min << std::endl;
+    std::cout <<"max: " << max << std::endl;
+
     return 0;
 }

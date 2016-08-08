@@ -1,36 +1,38 @@
 #include <iostream>
 #include <vector>
-#include <limits>
 #include "../utils.hpp"
 
-int get_min_weight_path (const std::vector<std::vector<int>>& A)
+
+int find_max_diff_helper(const std::vector<int>& coins,
+        int a, int b, std::vector<std::vector<int>>& K)
 {
-    std::vector<std::vector<int>> K(2, std::vector<int>(A.back().size(), 
-                std::numeric_limits<int>::max()));
-    K[0][0] = A[0][0];
-    for (int i = 1; i < A.size(); ++i) {
-        for (int j = 0; j < A[i].size(); ++j) {
-            K[i & 1][j] = A[i][j] + std::min(K[(i-1)&1][j],
-                    j > 0 ? K[(i-1)&1][j-1] : std::numeric_limits<int>::max());
-        }
+    if (a > b) {
+        return 0;
     }
-    int min_weight_path = std::numeric_limits<int>::max();
-    for (const auto& k: K[(A.size() - 1) & 1]) {
-        min_weight_path = std::min(min_weight_path, k);
+    if(K[a][b] != -1) {
+        return K[a][b];
     }
-    return min_weight_path;
+    K[a][b] = std::max(coins[a] +
+            std::min(find_max_diff_helper(coins, a + 2, b, K),
+                find_max_diff_helper(coins, a + 1, b - 1, K)),
+            coins[b] +
+            std::min(find_max_diff_helper(coins, a+1, b-1, K),
+                find_max_diff_helper(coins, a, b -2, K)));
+    return K[a][b];
 }
 
 
+int find_max_diff (const std::vector<int> coins)
+{
+    std::vector<std::vector<int>> K(coins.size(),
+            std::vector<int>(coins.size(), -1));
+    return find_max_diff_helper(coins, 0, coins.size() - 1, K);
+}
+
 int main (void)
 {
-    std::vector<std::vector<int>> A = {
-        {55},
-        {94, 48},
-        //{95, 30, 96},
-        //{77, 71, 26, 67}
-    };
-    auto res = get_min_weight_path(A);
-    std::cout <<res << std::endl;
+    std::vector<int> C = {25,5,10,5,10,5,10,25,1,25,1,25,1,25,5,10};
+    auto res = find_max_diff(C);
+    debug(res);
     return 0;
 }

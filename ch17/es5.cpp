@@ -1,65 +1,40 @@
 #include <iostream>
-#include <tuple>
 #include <vector>
-#include <list>
 #include "../utils.hpp"
 
 
-using XY_t = std::tuple<int,int>;
 
-std::list<XY_t> find_max_path (const std::vector<std::vector<int>>& sea)
+template <size_t N, size_t M>
+long get_max_fish_path (int (&A)[N][M])
 {
-    std::vector<std::vector<int>> K(sea.size(), std::vector<int>(
-                sea.size() ? sea[0].size() : sea[0].size(), 0));
-    for (int i = 0; i < sea.size(); ++i) {
-        for (int j = 0; j < sea[0].size(); ++j) {
-            K[i][j] = sea[i][j] + 
-                std::max(i > 0 ? K[i-1][j] : 0, j > 0 ? K[i][j-1] : 0);
+    int K[N][M] = {0};
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < M; ++j) {
+            K[i][j] = std::max(i >= 1 ? K[i-1][j] : 0,
+                    j >= 1 ? K[i][j-1] : 0) + A[i][j];
         }
     }
-    int i = sea.size() - 1, j = sea.size() ? sea[0].size() - 1: -1;
-    std::list<XY_t> path;
-    while (i > 0 && j > 0) {
-        path.push_front(std::make_tuple(i, j));
-        if(K[i][j] - sea[i][j] == K[i-1][j]) {
-            --i;
-        } else {
-            --j;
-        }
-    }
-    while(i) {
-        path.push_front(std::make_tuple(i, j));
-        --i;
-    }
-    while(j) {
-        path.push_front(std::make_tuple(i, j));
-        --j;
-    }
-    path.push_front(std::make_tuple(i,j));
-    return path;
+    return K[N-1][M-1];
 }
+
 
 int main (void)
 {
-    /*
-    std::vector<std::vector<int>> sea = {
-        {1, 1, 1, 1, 1},
-        {0, 0, 0, 0, 1},
-        {0, 0, 0, 0, 1},
-        {0, 0, 0, 0, 1},
-        {0, 0, 0, 0, 1},
-        {0, 0, 0, 0, 1},
-    };
-    */
-    std::vector<std::vector<int>> sea1 = {
-        {1, 0, 0, 0, 0},
-        {0, 1, 0, 0, 0},
-        {0, 0, 1, 0, 0},
-        {0, 0, 0, 1, 0},
-        {0, 0, 0, 0, 1},
-    };
+    int A[5][5] = {
+        {1,1,1,1,1},
+        {0,0,0,0,1},
+        {0,0,100,0,1},
+        {2,0,0,0,1},
+        {1,1,0,0,1}};
+    //int A[5][5] = {
+    //    {0,0,1,1,0},
+    //    {0,1,2,0,1},
+    //    {0,1,1,1,1},
+    //    {2,0,1,0,2},
+    //    {1,1,1,0,2}};
 
-    auto path = find_max_path(sea1);
-    std::cout << path << std::endl;
+    auto res = get_max_fish_path(A);
+    std::cout << res << std::endl;
     return 0;
 }
+

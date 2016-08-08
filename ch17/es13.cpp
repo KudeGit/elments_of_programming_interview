@@ -1,30 +1,39 @@
 #include <iostream>
 #include <vector>
+#include <limits>
+#include "../utils.hpp"
 
-int get_max_height_helper (int c, int d, 
-        std::vector<std::vector<int>>& F)
+int find_min_weight_path (const std::vector<std::vector<int>>& A)
 {
-    if (d == 0 || c == 0) {
+    if (A.empty()) {
         return 0;
-    } else if (c == 1) {
-        return d;
-    } else if (F[c][d] == -1) {
-        F[c][d] = get_max_height_helper(c, d-1, F) +
-            get_max_height_helper(c - 1, d - 1, F) + 1;
     }
-    return F[c][d];
+    std::vector<std::vector<int>> K(A.size(),
+            std::vector<int>(A.back().size(), 0));
+    K[0][0] = A[0][0];
+    for (int i = 1; i < A.size(); ++i) {
+        for (int j = 0; j < A[i].size(); ++j) {
+            K[i][j] = std::min(
+                    j > 0 ? K[i-1][j-1] : std::numeric_limits<int>::max(), 
+                    j < A[i-1].size() ? K[i-1][j] : std::numeric_limits<int>::max()) +
+                A[i][j];
+        }
+    }
+    debug(K);
+    return K.back().back();
 }
 
-int get_max_height (int c, int d)
-{
-    std::vector<std::vector<int>> F(c + 1, std::vector<int>(d + 1, -1));
-    return get_max_height_helper(c,d,F);
-}
 
-
-int main (void)
+int main (void) 
 {
-    auto res = get_max_height(3, 3);
+    std::vector<std::vector<int>> A = {
+        {1},
+        {1,1},
+        {1,2,1},
+        {1,3,3,1},
+    };
+    debug(A);
+    auto res = find_min_weight_path(A);
     std::cout << res << std::endl;
     return 0;
 }

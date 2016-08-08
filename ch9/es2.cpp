@@ -67,6 +67,8 @@ int RPN::evaluate (const std::string& expr)
 
 int main (void)
 {
+    auto test = [](int x, int y) {return x+y;};
+    std::cout << typeid(decltype(test)).name() << std::endl;
     RPN rpn;
     std::string expr1("3,4,*,1,-2,+,+");
     auto expr2 = {"1,1,+,-2,*"};

@@ -52,9 +52,9 @@ void compute_all_permutations_2 (std::vector<T>& A, std::vector<std::vector<T>>&
         res.emplace_back(A);
     }
     for (int i = k; i < A.size(); ++i) {
-        std::swap (A[k], A[i]);
-        compute_all_permutations_2 (A, res, k+1);
-        std::swap (A[k], A[i]);
+        std::swap(A[k], A[i]);
+        compute_all_permutations_2(A, res, k+1);
+        std::swap(A[k], A[i]);
     }
 }
 

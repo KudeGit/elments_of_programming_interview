@@ -1,53 +1,58 @@
 #include <iostream>
 #include <vector>
-#include <numeric>
+#include <limits>
 #include <tuple>
 #include "../utils.hpp"
 
-
-
-std::tuple<int,int,int> max_sub_array (const std::vector<int>& A)
+std::tuple<int, int,int> max_circular_array (const std::vector<int>& A)
 {
-    int curr_start = 0, curr_end = 0, curr_val = 0;
-    int max_start = 0, max_end = 0, max_val = std::numeric_limits<int>::min();
+    int max_sum = std::numeric_limits<int>::min();
+    int curr_sum = 0;
+    int cstart = 0, cend = 0;
+    int max_start = 0, max_end = 0;
     for (int i = 0; i < A.size(); ++i) {
-        curr_val += A[i];
-        if (curr_val > max_val) {
-            max_val = curr_val;
+        curr_sum += A[i];
+        cend = i;
+        if(curr_sum >= max_sum) {
+            max_sum = curr_sum;
+            max_start = cstart;
             max_end = i;
-            max_start = curr_start;
+            
         }
-        if (curr_val <= 0) {
-            curr_val = 0;
-            curr_start = i + 1;
-        }
-    }
-
-    int c_array_start = max_end + 1;
-    curr_start = max_end + 1; curr_end = max_end + 1; curr_val = 0;
-    for (int i = 0; i < A.size(); ++i) {
-        int j = (c_array_start + i) % A.size();
-        curr_val += A[j];
-        if (curr_val > max_val) {
-            max_val = curr_val;
-            max_start = curr_start;
-            max_end = j;
-        }
-        if (curr_val <= 0) {
-            curr_val = 0;
-            curr_start = j + 1;
+        if (curr_sum <= 0) {
+            curr_sum = 0;
+            cstart = i + 1;
+            cend = i + 1;
         }
     }
 
-    auto res = std::make_tuple(max_val, max_start, max_end);
-    return res;
+    curr_sum = 0;
+    cstart = max_end + 1;
+    cend = max_end + 1;
+    auto offset = max_end + 1;
+    for (int k = 0; k < A.size(); ++k) {
+        int i = (offset + k) % A.size();
+        curr_sum += A[i];
+        if (curr_sum > max_sum) {
+            curr_sum = max_sum;
+            max_end = i;
+            max_start = cstart;
+        }
+        if (curr_sum <= 0) {
+            curr_sum = 0;
+            cstart = i+1;
+            cend = i+1;
+        }
+    }
+
+    return std::make_tuple(max_sum, max_start, max_end);
 }
 
 
 int main (void)
 {
     std::vector<int> A = {904, 40, 523, 12, -335, -385, -124, 481, -31};
-    auto res = max_sub_array(A);
+    auto res = max_circular_array(A);
     std::cout << std::get<0>(res) << ", ";
     std::cout << std::get<1>(res) << ", ";
     std::cout << std::get<2>(res) << std::endl;

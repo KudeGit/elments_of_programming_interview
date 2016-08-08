@@ -82,9 +82,13 @@ int main (void)
 {
     auto root = create_3_unbalanced_tree();
     auto a = find (root, 'd');
-    auto b = find (root, 'm');
-//auto lca = lowest_common_ancestor(root, a, b);
-    auto lca = lowest_common_ancestor_with_parent(root, a, b);
-    std::cout << *lca << std::endl;
+    auto b = find (root, 'x');
+    auto lca = lowest_common_ancestor(root, a, b);
+    //auto lca = lowest_common_ancestor_with_parent(root, a, b);
+    if (lca) {
+        std::cout << *lca << std::endl;
+    } else {
+        std::cout << "Not found" << std::endl;
+    }
     return 0;
 }
