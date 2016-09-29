@@ -7,6 +7,7 @@
 #include <typeinfo>
 #include <fstream>
 #include <sstream>
+#include <queue>
 #include "../utils.hpp"
 
 
@@ -22,7 +23,6 @@ struct Edge {
     std::shared_ptr<GraphNode<T>> from;
     std::shared_ptr<GraphNode<T>> to;
     std::vector<int> weights; //support multiple edges with different weight
-    friend class GraphNode<T>;
 };
 
 
@@ -45,6 +45,7 @@ struct KeyEqualEdge {
 
 
 
+
 template <class T>
 class GraphNode {
     std::vector<std::shared_ptr<Edge<T>>> adj_list;
@@ -61,11 +62,11 @@ class GraphNode {
         post_visit_time = 0;
         is_visited = false;
     }
-    GraphNode () : data(nullptr) {}
+    GraphNode () : data(nullptr) {std::cout << "I am default" << std::endl;}
     GraphNode (const std::shared_ptr<T>& data_ptr) : data(data_ptr) {}
-    GraphNode (const GraphNode<T>& other);
-    GraphNode (GraphNode<T>&& other);
-    GraphNode& operator= (GraphNode<T> other);
+    //GraphNode (const GraphNode<T>& other);
+    //GraphNode (GraphNode<T>&& other);
+    //GraphNode& operator= (GraphNode<T> other);
     const int get_pre_visit_time () const { return pre_visit_time; }
     const int get_visit_time () const { return visit_time; }
     const int get_post_visit_time () const { return post_visit_time; }
@@ -77,11 +78,9 @@ class GraphNode {
     void set_is_visited (bool v) { is_visited = v; }
     void set_data (std::shared_ptr<T>& d) {data = d;}
 
-
-    ~GraphNode() {}
-
     friend std::ostream& operator<< (std::ostream& out, const GraphNode<T>& gn) {
-        out << "{" << *gn.data << "(" << gn.data.use_count() << ")" << "}";
+        out << "{" << *gn.data << "(" << gn.pre_visit_time << ", " <<
+            gn.post_visit_time << ")" << "}";
         return out;
     }
 
@@ -104,27 +103,29 @@ namespace std {
     };
 }
 
-template <class T>
-GraphNode<T>::GraphNode (GraphNode<T>&& other)
-{
-    data = other.data;
-    other.data = nullptr;
-    pre_visit_time = other.pre_visit_time;
-    visit_time = other.visit_time;
-    post_visit_time = other.visit_time;
-    is_visited = other.is_visited;
-}
+//template <class T>
+//GraphNode<T>::GraphNode (GraphNode<T>&& other)
+//{
+//    std::cout << "I am the move" << std::endl;
+//    data = other.data;
+//    other.data = nullptr;
+//    pre_visit_time = other.pre_visit_time;
+//    visit_time = other.visit_time;
+//    post_visit_time = other.visit_time;
+//    is_visited = other.is_visited;
+//}
 
 
-template <class T>
-GraphNode<T>::GraphNode(const GraphNode<T>& other)
-{
-    data = other.data;
-    pre_visit_time = other.pre_visit_time;
-    visit_time = other.visit_time;
-    post_visit_time = other.visit_time;
-    is_visited = other.is_visited;
-}
+//template <class T>
+//GraphNode<T>::GraphNode(const GraphNode<T>& other)
+//{
+//    std::cout << "I am copy" << std::endl;
+//    data = other.data;
+//    pre_visit_time = other.pre_visit_time;
+//    visit_time = other.visit_time;
+//    post_visit_time = other.visit_time;
+//    is_visited = other.is_visited;
+//}
 
 template <class T>
 void GraphNode<T>::swap(GraphNode<T>& other)
@@ -136,13 +137,13 @@ void GraphNode<T>::swap(GraphNode<T>& other)
     std::swap(is_visited, other.is_visited);
 }
 
-template <class T>
-GraphNode<T>& GraphNode<T>::operator= (GraphNode<T> other)
-{
-    swap(other);
-    return *this;
-}
-
+//template <class T>
+//GraphNode<T>& GraphNode<T>::operator= (GraphNode<T> other)
+//{
+//    swap(other);
+//    return *this;
+//}
+//
 template <class T1, class T2>
 struct KeyHashPair {
     size_t operator() (const std::pair<T1,T1>& p) const {
@@ -178,13 +179,44 @@ class Graph {
             KeyHashPair<T,T>> edges;
         void reset_nodes_status();
         template <class U>
-        void explore(std::shared_ptr<GraphNode<T>>& curr, int& time, U u);
+        void explore(std::shared_ptr<GraphNode<T>>& curr, int& time, U& u);
+        void reverse(std::shared_ptr<GraphNode<T>>& curr,
+                std::unordered_set<std::shared_ptr<Edge<T>>>& reversed_edges);
     public:
         Graph() {};
         void load_from_file (const std::string& filename);
         void add_edge(const std::shared_ptr<T> from, 
                 const std::shared_ptr<T> to, const int weigth = 1);
-        void dfs ();
+        template <class U>
+        void dfs (U& u);
+
+        template <class U>
+        void dfs (const std::shared_ptr<GraphNode<T>>& start, U& u) {
+            reset_nodes_status();
+            int t = 0;
+            explore(start, t, u);
+        }
+
+        template <class U>
+        void dfs (const T& start, U& u) {
+            if(nodes.find(start) == nodes.end()) {
+                throw std::logic_error("node is not present");
+            }
+            dfs(nodes[start], u);
+        }
+
+        void reverse();
+        std::vector<std::vector<std::shared_ptr<GraphNode<T>>>> get_scc ();
+        void bfs(const std::shared_ptr<GraphNode<T>>& start);
+        void bfs(const T& start) {
+            if(nodes.find(start) == nodes.end()) {
+                throw std::logic_error("node is not present");
+            }
+            bfs(nodes[start]);
+        }
+
+
+
 
     friend std::ostream& operator<< (std::ostream& out, const Graph<T>& g) {
         for (const auto& node_pair: g.nodes) {
@@ -230,47 +262,6 @@ void Graph<T>::reset_nodes_status()
     }
 }
 
-
-template <class T>
-template <class U>
-void Graph<T>::explore(std::shared_ptr<GraphNode<T>>& curr, int& time, U u)
-{
-    if (curr->is_visited) {
-        throw std::logic_error("Visiting an already visited node");
-    }
-    curr->pre_visit_time = time++;
-    curr->is_visited = true;
-    u(curr);
-    for (auto& edge: curr->adj_list) {
-        if (edge->from != curr) {
-            throw std::logic_error("source edge node differes from current node");
-        }
-        if (!edge->to->is_visited) {
-            explore(edge->to, time, u);
-        }
-    }
-    curr->post_visit_time = time++;
-}
-
-template <class T>
-void Graph<T>::dfs()
-{
-    auto time = 0;
-    reset_nodes_status();
-    for (auto& it: nodes) {
-        auto start = it.second;
-        try {
-            if(!start->is_visited) {
-                explore(start, time, [](auto node) {std::cout << *node;});
-            }
-            std::cout << std::endl;
-        } catch (const std::exception& e) {
-            std::cout << e.what() << std::endl;
-        }
-    }
-}
-
-
 template <class T>
 void Graph<T>::load_from_file (const std::string& filename)
 {
@@ -293,4 +284,160 @@ void Graph<T>::load_from_file (const std::string& filename)
         }
     }
 }
+
+template <class T>
+template <class U>
+void Graph<T>::explore(std::shared_ptr<GraphNode<T>>& curr, int& time, U& u)
+{
+    if (curr->is_visited) {
+        throw std::logic_error("Visiting an already visited node");
+    }
+    curr->pre_visit_time = time++;
+    curr->is_visited = true;
+    u(curr);
+    for (auto& edge: curr->adj_list) {
+        if (edge->from != curr) {
+            throw std::logic_error("source edge node differes from current node");
+        }
+        if (!edge->to->is_visited) {
+            explore(edge->to, time, u);
+        }
+    }
+    curr->post_visit_time = time++;
+}
+
+template <class T>
+template <class U>
+void Graph<T>::dfs(U& u)
+{
+    auto time = 0;
+    reset_nodes_status();
+    for (auto& it: nodes) {
+        auto start = it.second;
+        try {
+            if(!start->is_visited) {
+                explore(start, time, u);
+            }
+        } catch (const std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
+    }
+}
+
+
+
+template <class T>
+void Graph<T>::reverse(std::shared_ptr<GraphNode<T>>& curr,
+        std::unordered_set<std::shared_ptr<Edge<T>>>& reversed_edges)
+{
+    curr->is_visited = true;
+    while(!curr->adj_list.empty()) {
+        auto& e = curr->adj_list.front();
+        if (!e->to->is_visited) {
+            reverse(e->to, reversed_edges);
+        }
+        std::swap(e->from, e->to);
+        std::swap(curr->adj_list.front(), curr->adj_list.back());
+        curr->adj_list.pop_back();
+    }
+}
+
+template <class T>
+void Graph<T>::reverse ()
+{
+    reset_nodes_status();
+    std::unordered_set<std::shared_ptr<Edge<T>>> reversed_edges;
+    for (auto& it: nodes){
+        auto start = it.second;
+        if (!start->is_visited) {
+            reverse(start, reversed_edges);
+        }
+    }
+    for (auto& edge_value_pair: edges) {
+        auto e = edge_value_pair.second;
+        nodes[*(e->from->get_data())]->adj_list.emplace_back(e);
+    }
+    reset_nodes_status();
+}
+
+template <class T>
+struct SCC {
+    std::vector<std::shared_ptr<GraphNode<T>>> scc;
+    void operator() (const std::shared_ptr<GraphNode<T>>& node) {
+        scc.emplace_back(node);
+    }
+};
+template <class T>
+std::ostream& operator<< (std::ostream& out, const SCC<T>& scc) {
+    for (const auto& node: scc.scc) {
+        out << *node << ", ";
+    }
+    return out;
+}
+
+template <class T>
+std::vector<std::vector<std::shared_ptr<GraphNode<T>>>> Graph<T>::get_scc()
+{
+    reverse();
+    auto do_nothing = [](auto a){return;};
+    dfs(do_nothing);
+    std::vector<std::shared_ptr<GraphNode<T>>> tmp_nodes;
+    for (auto& node_pair: nodes){
+        auto& node= node_pair.second;
+        tmp_nodes.emplace_back(node);
+    }
+    std::sort(tmp_nodes.begin(), tmp_nodes.end(), [](auto& a, auto& b){
+            return a->post_visit_time > b->post_visit_time;
+        });
+    
+    std::vector<std::vector<std::shared_ptr<GraphNode<T>>>> res;
+    reverse();
+    int time = 0; 
+    for (auto &node: tmp_nodes) {
+        if(node->is_visited == false) {
+            SCC<T> curr_scc;
+            explore(node, time, curr_scc);
+            res.emplace_back(curr_scc.scc);
+        }
+    }
+    for (const auto& scc: res){
+        std::cout << "scc: " ;
+        for (auto& node: scc) {
+            std::cout << *node << ", ";
+        }
+        std::cout << std::endl;
+    }
+    return res;
+}
+
+
+template <class T>
+void Graph<T>::bfs(const std::shared_ptr<GraphNode<T>>& start)
+{
+    std::unordered_map<std::shared_ptr<GraphNode<T>>, int> distance;
+    std::queue<std::shared_ptr<GraphNode<T>>> Q;
+
+    distance[start] = 0;
+    Q.push(start);
+    while (!Q.empty()) {
+        auto curr = Q.front(); Q.pop();
+        for (auto& edge: curr->adj_list) {
+            auto to = edge->to;
+            auto& candidate = distance[to];
+            if (!candidate) {
+                candidate = distance[curr] + 1;
+                Q.push(to);
+            }
+        }
+    }
+
+    std::cout << "Distance from: " << *start << ": ";
+    for (const auto& dist_pair: distance) {
+        std::cout << *dist_pair.first << ", " << dist_pair.second << std::endl;
+    }
+    return;
+}
+
+
+
 
