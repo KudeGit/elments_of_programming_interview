@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <queue>
+#include <tuple>
 #include "../utils.hpp"
 
 
@@ -67,11 +68,11 @@ class GraphNode {
     //GraphNode (const GraphNode<T>& other);
     //GraphNode (GraphNode<T>&& other);
     //GraphNode& operator= (GraphNode<T> other);
-    const int get_pre_visit_time () const { return pre_visit_time; }
-    const int get_visit_time () const { return visit_time; }
-    const int get_post_visit_time () const { return post_visit_time; }
-    const bool get_is_visited () const { return is_visited; }
-    const std::shared_ptr<T> get_data() const {return data;}
+    int get_pre_visit_time () const { return pre_visit_time; }
+    int get_visit_time () const { return visit_time; }
+    int get_post_visit_time () const { return post_visit_time; }
+    bool get_is_visited () const { return is_visited; }
+    std::shared_ptr<T> get_data() const {return data;}
     void set_pre_visit_time (int t) { pre_visit_time = t; }
     void set_visit_time (int t) { visit_time = t; }
     void set_post_visit_time (int t) { post_visit_time = t; }
@@ -186,7 +187,7 @@ class Graph {
         Graph() {};
         void load_from_file (const std::string& filename);
         void add_edge(const std::shared_ptr<T> from, 
-                const std::shared_ptr<T> to, const int weigth = 1);
+                const std::shared_ptr<T> to, const int weight = 1);
         template <class U>
         void dfs (U& u);
 
@@ -200,23 +201,28 @@ class Graph {
         template <class U>
         void dfs (const T& start, U& u) {
             if(nodes.find(start) == nodes.end()) {
-                throw std::logic_error("node is not present");
+                throw std::logic_error("dfs: node is not present");
             }
             dfs(nodes[start], u);
         }
 
         void reverse();
         std::vector<std::vector<std::shared_ptr<GraphNode<T>>>> get_scc ();
-        void bfs(const std::shared_ptr<GraphNode<T>>& start);
-        void bfs(const T& start) {
+        std::unordered_map<std::shared_ptr<GraphNode<T>>, int>  bfs(const std::shared_ptr<GraphNode<T>>& start);
+        std::unordered_map<std::shared_ptr<GraphNode<T>>, int> bfs(const T& start) {
             if(nodes.find(start) == nodes.end()) {
-                throw std::logic_error("node is not present");
+                throw std::logic_error("bfs: node is not present");
             }
             bfs(nodes[start]);
         }
 
-
-
+        auto dijkstra (const T& start) {
+            if(nodes.find(start) == nodes.end()) {
+                throw std::logic_error("dijkstra: node is not present");
+            }
+            return dijkstra(nodes[start]);
+        }
+        auto dijkstra (const std::shared_ptr<GraphNode<T>>& start);
 
     friend std::ostream& operator<< (std::ostream& out, const Graph<T>& g) {
         for (const auto& node_pair: g.nodes) {
@@ -407,12 +413,13 @@ std::vector<std::vector<std::shared_ptr<GraphNode<T>>>> Graph<T>::get_scc()
         }
         std::cout << std::endl;
     }
+    reset_nodes_status();
     return res;
 }
 
 
 template <class T>
-void Graph<T>::bfs(const std::shared_ptr<GraphNode<T>>& start)
+std::unordered_map<std::shared_ptr<GraphNode<T>>, int> Graph<T>::bfs(const std::shared_ptr<GraphNode<T>>& start)
 {
     std::unordered_map<std::shared_ptr<GraphNode<T>>, int> distance;
     std::queue<std::shared_ptr<GraphNode<T>>> Q;
@@ -424,18 +431,52 @@ void Graph<T>::bfs(const std::shared_ptr<GraphNode<T>>& start)
         for (auto& edge: curr->adj_list) {
             auto to = edge->to;
             auto& candidate = distance[to];
-            if (!candidate) {
+            if (!candidate && to != start) {
                 candidate = distance[curr] + 1;
                 Q.push(to);
             }
         }
     }
 
-    std::cout << "Distance from: " << *start << ": ";
-    for (const auto& dist_pair: distance) {
-        std::cout << *dist_pair.first << ", " << dist_pair.second << std::endl;
+    //std::cout << "Distance from " << *start << ": " << std::endl;
+    //for (const auto& dist_pair: distance) {
+    //    std::cout << "\t\t" << *dist_pair.first << ", " << dist_pair.second << std::endl;
+    //}
+    return distance;
+}
+
+
+template <class T>
+auto Graph<T>::dijkstra (const std::shared_ptr<GraphNode<T>>& start)
+{
+    auto pq_cmp = [] (const auto& a, const auto& b) {
+        return a.second > b.second;
+    };
+    std::unordered_map<std::shared_ptr<GraphNode<T>>, std::tuple<std::shared_ptr<GraphNode<T>>, std::shared_ptr<GraphNode<T>>, int>> dist;
+    std::priority_queue<std::pair<std::shared_ptr<GraphNode<T>>, int>, std::vector<GraphNode<T>>, decltype(pq_cmp)> Q;
+    Q.push(std::make_pair(start, 0));
+    dist[start] = std::make_tuple<std::shared_ptr<GraphNode<T>>, std::shared_ptr<GraphNode<T>>, int>(start, nullptr, 0);
+    while (Q.empty()) {
+        auto curr = Q.front(); Q.pop();
+        auto curr_node = curr.first;
+        auto curr_dist = curr.second;
+        for (const auto& edge: curr_node->adj_list) {
+            if (edge->to == start) {
+                continue;
+            }
+            auto candidate_dist = dist[edge->to];
+            if (!candidate_dist) {
+                candidate_dist = curr_dist + edge->weight;
+                dist[edge->to] = std::make_tuple(edge->to, curr_node, candidate_dist);
+                Q.push(std::make_pair(edge->to, candidate_dist));
+            } else if (curr_dist + edge->weight < candidate_dist) {
+                candidate_dist = curr_dist + edge->weight;
+                dist[edge->to] = std::make_tuple(edge->to, curr_node, candidate_dist);
+                Q.push(std::make_pair(edge->to, candidate_dist));
+            }
+        }
     }
-    return;
+    return dist;
 }
 
 

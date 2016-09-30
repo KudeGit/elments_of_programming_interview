@@ -14,7 +14,9 @@ int main (int argc, char* argv[])
     Graph<std::string> g;
     g.load_from_file(argv[1]);
     auto print_node = [](auto node) {std::cout << *node;};
-    g.dfs(print_node);
+    auto do_nothing = [](auto node) {return;};
+    g.dfs(do_nothing);
+    std::cout << g << std::endl;
     //auto sp = std::make_shared<int>(12);
     //GraphNode<int> A{GraphNode<int>(sp)};
     //GraphNode<int> B{std::move(A)};
@@ -22,8 +24,6 @@ int main (int argc, char* argv[])
     //C = B;
     //std::cout << B << std::endl;
     //std::cout << C << std::endl;
-    std::cout << g << std::endl;
-
     g.get_scc();
 
 
