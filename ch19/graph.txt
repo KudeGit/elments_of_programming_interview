@@ -1,26 +1,26 @@
-G D
-D G
-G H
-H G
-D H
-H D
-A D
-D A
-A B
-B A
-A C
-C A
-C F
-F C
-B F
-F B
-B E
-E B
-E I
-I E
-E J
-J E
-I J
-J I
-K L
-L K
+G D 1
+D G 1
+G H 1
+H G 1
+D H 1
+H D 1
+A D 1
+D A 1
+A B 1
+B A 1
+A C 1
+C A 1
+C F 1
+F C 1
+B F 1
+F B 1
+B E 1
+E B 1
+E I 1
+I E 1
+E J 1
+J E 1
+I J 1
+J I 1
+K L 1
+L K 1
