@@ -51,6 +51,15 @@ int main (int argc, char* argv[])
         std::cout << *curr_node << ": prev: " << *prev 
             << " / dist: " << min_dist << std::endl;
     }
+    banner("Kruskal:");
+    Graph<char> g1;
+    g1.load_from_file("graph5.txt");
+    std::cout << g1 << std::endl;
+
+    auto min_tree = g1.kruskal_min_spanning_tree();
+    for (const auto& edge: min_tree) {
+        std::cout << *edge << std::endl;
+    }
 
 
     return 0;

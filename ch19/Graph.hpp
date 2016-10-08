@@ -11,6 +11,7 @@
 #include <tuple>
 #include "../utils.hpp"
 #include <limits>
+#include "Union.hpp"
 
 
 template <class T>
@@ -159,7 +160,7 @@ template <class T>
 std::ostream& operator<< (std::ostream& out, const Edge<T>& e)
 {
     out << "(" <<  (*e.from)  << ", "
-        << (*e.to) << ", " << e.weights.size() << ") ";
+        << (*e.to) << ", " << e.weights[0] << ") ";
     return out;
 }
 
@@ -233,6 +234,7 @@ class Graph {
             return bellman_ford(nodes[start]);
         }
 
+        auto kruskal_min_spanning_tree();
         auto bellman_ford (const std::shared_ptr<GraphNode<T>>& start);
 
 
@@ -301,6 +303,9 @@ void Graph<T>::load_from_file (const std::string& filename)
                 add_edge(a_node_ptr, b_node_ptr, w);
             }
         }
+    }
+    for (auto& edge: edges) {
+        std::sort(edge.second->weights.begin(), edge.second->weights.end());
     }
 }
 
@@ -496,6 +501,35 @@ auto Graph<T>::dijkstra (const std::shared_ptr<GraphNode<T>>& start)
     return dist;
 }
 
+template <class T>
+auto Graph<T>::kruskal_min_spanning_tree (void)
+{
+    Union<GraphNode<T>> U;
+    std::vector<std::shared_ptr<Edge<T>>>tmp_edges;
+    for (const auto& node_pair: nodes) {
+        U.makeset(node_pair.second);
+    }
+    for (const auto& edge: edges) {
+        tmp_edges.emplace_back(edge.second);
+    }
+    std::sort(tmp_edges.begin(), tmp_edges.end(),
+            [](const auto& lhs, const auto& rhs){
+                return lhs->weights[0] < rhs->weights[0];
+            });
+
+    std::vector<std::shared_ptr<Edge<T>>> min_tree;
+    for (const auto& e: tmp_edges) {
+        const auto to = U.find(e->to);
+        const auto from = U.find(e->from);
+        if (to != from) {
+            min_tree.emplace_back(e);
+            U.union_find(e->to, e->from);
+        }
+    }
+    return min_tree;
+
+}
+
 
 template <class T>
 auto Graph<T>::bellman_ford (const std::shared_ptr<GraphNode<T>>& start)
@@ -522,8 +556,6 @@ auto Graph<T>::bellman_ford (const std::shared_ptr<GraphNode<T>>& start)
     }
 
     return dist;
-
-
 }
 
 
