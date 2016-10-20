@@ -1,0 +1,12 @@
+t x 7
+t z 2
+t y 4
+r t 3
+r s 5
+y z -2
+s t 2
+s x 6
+x y -1
+x z 1
+
+

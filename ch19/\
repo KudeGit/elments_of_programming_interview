@@ -12,7 +12,6 @@
 #include "../utils.hpp"
 #include <limits>
 #include "Union.hpp"
-#include <stack>
 
 
 template <class T>
@@ -26,7 +25,7 @@ template <class T>
 struct Edge {
     std::shared_ptr<GraphNode<T>> from;
     std::shared_ptr<GraphNode<T>> to;
-    std::vector<int> weights; //support multiple edges with sorted by weight
+    std::vector<int> weights; //support multiple edges with different weight
 };
 
 
@@ -98,7 +97,7 @@ class GraphNode {
 
     friend std::ostream& operator<< (std::ostream& out, const GraphNode<T>& gn) {
         out << "{" << *gn.data << "(" << gn.pre_visit_time << ", " <<
-            gn.post_visit_time << ", " <<gn.is_visited <<")" << "}";
+            gn.post_visit_time << ")" << "}";
         return out;
     }
 
@@ -200,17 +199,12 @@ class Graph {
         void explore(std::shared_ptr<GraphNode<T>>& curr, int& time, U& u);
         void reverse(std::shared_ptr<GraphNode<T>>& curr,
                 std::unordered_set<std::shared_ptr<Edge<T>>>& reversed_edges);
-        auto explore_cycle(std::shared_ptr<GraphNode<T>> curr, std::shared_ptr<GraphNode<T>> prev);
-
-        void topoSort(std::shared_ptr<GraphNode<T>>& node, std::stack<std::shared_ptr<GraphNode<T>>>& S, int& time);
-        void topoSortParallel(std::shared_ptr<GraphNode<T>>& node, std::vector<std::vector<std::shared_ptr<GraphNode<T>>>>& parallel, int depth, int& time);
-        
+        auto explore_cycle(std::shared_ptr<GraphNode<T>>& curr, std::shared_ptr<GraphNode<T>>& prev);
     public:
         Graph() {};
         void load_from_file (const std::string& filename);
-        void add_edge (const T& from, const T& to, const int w = 1);
-        void add_edge(const std::shared_ptr<GraphNode<T>> from, 
-                const std::shared_ptr<GraphNode<T>> to, const int weight = 1);
+        void add_edge(const std::shared_ptr<T> from, 
+                const std::shared_ptr<T> to, const int weight = 1);
         template <class U>
         void dfs (U& u);
 
@@ -259,39 +253,6 @@ class Graph {
         auto bellman_ford (const std::shared_ptr<GraphNode<T>>& start);
 
         auto is_cycle ();
-        
-        std::stack<std::shared_ptr<GraphNode<T>>> topoSort();
-        auto longest_path(const T& start) {
-            auto&node =  nodes[start];
-            if(!node) {
-                nodes.erase(start);
-                throw std::logic_error("Node not present");
-            } else {
-                return longest_path(node);
-            }
-        };
-
-        std::vector<std::vector<std::shared_ptr<GraphNode<T>>>> topoSortParallel() {
-            reset_nodes_status();
-            auto S = topoSort(); //find the first node;
-            std::vector<std::vector<std::shared_ptr<GraphNode<T>>>> res;
-            int depth = 0;
-            int time = 0;
-            reset_nodes_status();
-            topoSortParallel(S.top(),res, 0, time);
-
-            //process the rest of the graph
-            for (auto& node_pair: nodes) {
-                auto node = node_pair.second;
-                if (node->is_visited == Color::WHITE) {
-                    topoSortParallel(node,res, 0, time);
-                }
-            }
-            return res;
-        }
-
-
-        auto longest_path(const std::shared_ptr<GraphNode<T>>& start);
 
 
     friend std::ostream& operator<< (std::ostream& out, const Graph<T>& g) {
@@ -308,15 +269,24 @@ class Graph {
 };
 
 template<class T>
-void Graph<T>::add_edge(const std::shared_ptr<GraphNode<T>> from, 
-        const std::shared_ptr<GraphNode<T>> to, const int weight)
+void Graph<T>::add_edge(const std::shared_ptr<T> from, 
+        const std::shared_ptr<T> to, const int weight)
 {
-    auto& edge = edges[std::pair<T,T>{*from->data, *to->data}];
+    auto& source = nodes[*from];
+    if (!source) {
+        source = std::make_shared<GraphNode<T>>(from);
+    }
+    auto& destination = nodes[*to];
+    if (!destination) {
+        destination = std::make_shared<GraphNode<T>>(to);
+    }
+    auto tmp_edge = std::pair<T,T>{*from, *to};
+    auto& edge = edges[std::pair<T,T>{*from, *to}];
     if (!edge) {
-        edge = std::make_shared<Edge<T>>(Edge<T>{from, to});
+        edge = std::make_shared<Edge<T>>(Edge<T>{source, destination});
     }
     edge->weights.emplace_back(weight);
-    from->adj_list.emplace_back(edge);
+    source->adj_list.emplace_back(edge);
 }
 
 
@@ -327,22 +297,6 @@ void Graph<T>::reset_nodes_status()
         auto node = it.second;
         node->reset_stats();
     }
-}
-
-template <class T>
-void Graph<T>::add_edge(const T& a, const T& b, const int w)
-{
-    auto &node_a = nodes[a];
-    if (!node_a) {
-        auto a_node_ptr = std::make_shared<T>(a);
-        node_a = std::make_shared<GraphNode<T>>(a_node_ptr);
-    }
-    auto& node_b = nodes[b];
-    if (!node_b) {
-        auto b_node_ptr = std::make_shared<T>(b);
-        node_b = std::make_shared<GraphNode<T>>(b_node_ptr);
-    }
-    add_edge(node_a, node_b, w);
 }
 
 template <class T>
@@ -360,7 +314,11 @@ void Graph<T>::load_from_file (const std::string& filename)
         if (line.size() > 1) {
             std::stringstream ss(line);
             ss >> a; ss >> b; ss >> w;
-            add_edge(a, b, w);
+            {
+                auto a_node_ptr = std::make_shared<T>(a);
+                auto b_node_ptr = std::make_shared<T>(b);
+                add_edge(a_node_ptr, b_node_ptr, w);
+            }
         }
     }
     for (auto& edge: edges) {
@@ -620,21 +578,18 @@ auto Graph<T>::bellman_ford (const std::shared_ptr<GraphNode<T>>& start)
 
 
 template<class T>
-auto Graph<T>::explore_cycle(std::shared_ptr<GraphNode<T>> curr, const std::shared_ptr<GraphNode<T>> prev)
+auto Graph<T>::explore_cycle(std::shared_ptr<GraphNode<T>>& curr, std::shared_ptr<GraphNode<T>>& prev)
 {
     if (curr->is_visited == Color::GREY) {
         return true;
     }
-    curr->is_visited = Color::GREY;
+    curr->is_visited == Color::GREY;
     for (auto& edge: curr->adj_list) {
-        auto to = edge->to;
-        if (curr != prev && to->is_visited != Color::BLACK) {
-            if(explore_cycle(to, curr)) {
-                return true;
-            }
+        auto to = edges->to;
+        if (to != preb && to->is_visited != Color::BLACK) {
+            explore_cycle(to, curr);
         }
     }
-    curr->is_visited = Color::BLACK;
     return false;
 }
 
@@ -655,87 +610,3 @@ auto Graph<T>::is_cycle ()
 
 }
 
-
-template <class T>
-void Graph<T>::topoSort(std::shared_ptr<GraphNode<T>>& node,
-        std::stack<std::shared_ptr<GraphNode<T>>>& S, int& time)
-{
-    node->set_pre_visit_time(time++);
-    node->is_visited = Color::BLACK;
-    for (auto edge: node->adj_list) {
-        auto to = edge->to;
-        if (to->is_visited == Color::WHITE) {
-            topoSort(to, S, time);
-        }
-    }
-    node->set_post_visit_time(time++);
-    S.push(node);
-}
-
-
-template <class T>
-std::stack<std::shared_ptr<GraphNode<T>>> Graph<T>::topoSort()
-{
-    reset_nodes_status();
-    int time = 0;
-    std::stack<std::shared_ptr<GraphNode<T>>> S;
-    for (auto& node_pair: nodes) {
-        auto& node = node_pair.second;
-        if(node->is_visited == Color::WHITE) {
-            topoSort(node, S, time);
-        }
-    }
-    return S;
-}
-
-
-
-template <class T>
-auto Graph<T>::longest_path(const std::shared_ptr<GraphNode<T>>& start)
-{
-    auto S = topoSort();
-
-
-
-    std::unordered_map<std::shared_ptr<GraphNode<T>>, int> dist;
-    for (const auto& node_pair: nodes){
-        dist[node_pair.second] = std::numeric_limits<int>::min(); //inf dist
-    }
-    dist[start] = 0;
-
-    while (!S.empty()) {
-        auto curr_node = S.top();
-        for (const auto& edge: curr_node->adj_list) {
-            auto& to = edge->to;
-            if (dist[to] < dist[curr_node] + edge->weights.back()) {
-                dist[to] = dist[curr_node] + edge->weights.back();
-            }
-        }
-        S.pop();
-    }
-    return dist;
-}
-
-
-template <class T>
-void Graph<T>::topoSortParallel(std::shared_ptr<GraphNode<T>>& node, std::vector<std::vector<std::shared_ptr<GraphNode<T>>>>& parallel, int depth, int& time)
-{
-    node->is_visited = Color::BLACK;
-    node->set_pre_visit_time(time++);
-    if (depth >= parallel.size()) {
-        parallel.emplace_back(std::vector<std::shared_ptr<GraphNode<T>>>());
-        if (depth >= parallel.size()) {
-            throw std::logic_error("Something is wrong...");
-        }
-    }
-    parallel[depth].emplace_back(node);
-    for (auto& edge: node->adj_list) {
-        auto& to = edge->to;
-        if (to->is_visited == Color::WHITE) {
-            topoSortParallel(to, parallel, depth+1, time);
-        }
-    }
-    node->set_post_visit_time(time++);
-    return;
-
-}

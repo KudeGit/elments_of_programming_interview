@@ -62,6 +62,35 @@ int main (int argc, char* argv[])
     }
 
 
+    Graph<std::string> gg;
+    gg.load_from_file(argv[1]);
+
+    std::cout << gg.is_cycle() << std::endl;
+    
+    banner("Longest Path");
+    Graph<int> g9;
+    g9.add_edge(0, 1, 5);
+    g9.add_edge(0, 2, 3);
+    g9.add_edge(1, 3, 6);
+    g9.add_edge(1, 2, 2);
+    g9.add_edge(2, 4, 4);
+    g9.add_edge(2, 5, 2);
+    g9.add_edge(2, 3, 7);
+    g9.add_edge(3, 5, 1);
+    g9.add_edge(3, 4, -1);
+    g9.add_edge(4, 5, -2);
+    std::cout << g9 << std::endl;
+    
+    auto S = g9.topoSort();
+    while (!S.empty()) {
+        std::cout << *S.top() << std::endl;
+        S.pop();
+    }
+    auto dist = g9.longest_path(1);
+    for (const auto& d: dist) {
+        std::cout << *d.first << ": " << d.second << std::endl;
+    }
+
     return 0;
 }
 
