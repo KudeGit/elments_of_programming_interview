@@ -248,6 +248,15 @@ class Graph {
         auto dijkstra (const std::shared_ptr<GraphNode<T>>& start);
 
 
+        auto dijkstra_with_fewest_edges (const T& start) {
+            if(nodes.find(start) == nodes.end()) {
+                throw std::logic_error("dijkstra: node is not present");
+            }
+            return dijkstra_with_fewest_edges(nodes[start]);
+        }
+        auto dijkstra_with_fewest_edges (std::shared_ptr<GraphNode<T>>& start);
+
+
         auto bellman_ford (const T& start) {
             if(nodes.find(start) == nodes.end()) {
                 throw std::logic_error("dijkstra: node is not present");
@@ -738,4 +747,65 @@ void Graph<T>::topoSortParallel(std::shared_ptr<GraphNode<T>>& node, std::vector
     node->set_post_visit_time(time++);
     return;
 
+}
+
+
+template <class X, class Y, class Z>
+std::ostream& operator<< (std::ostream& out, const std::tuple<std::shared_ptr<X>,Y,Z>& t)
+{
+    out << "(" << *std::get<0>(t) << ", " << std::get<1>(t) << ", " <<std::get<2>(t) << ")";
+    return out;
+}
+
+template <class T>
+auto Graph<T>::dijkstra_with_fewest_edges (std::shared_ptr<GraphNode<T>>& start)
+{
+    auto cmp = [](const auto& a, const auto& b) {
+        auto d_a = std::get<1>(a);
+        auto d_b = std::get<1>(b);
+        if (d_a > d_b) {
+            return true;
+        } else if (d_a == d_b) {
+            return std::get<2>(a) > std::get<2>(b);
+        } else {
+            return false;
+        }
+    };
+
+    std::unordered_map<std::shared_ptr<GraphNode<T>>,
+        std::tuple<std::shared_ptr<GraphNode<T>>, int, int>> dist;
+    std::priority_queue<
+        std::tuple<std::shared_ptr<GraphNode<T>>, int, int>,
+        std::vector<std::tuple<std::shared_ptr<GraphNode<T>>, int, int>>,
+        decltype(cmp)> Q(cmp);
+
+    auto first = std::make_tuple(start, 0, 0);
+    Q.push(first);
+    dist[start] =std::make_tuple<std::shared_ptr<GraphNode<T>>, int, int>(nullptr, 0, 0);
+    while (!Q.empty()) {
+        auto curr_elem = Q.top(); Q.pop();
+        auto curr_node = std::get<0>(curr_elem);
+        auto curr_dist = std::get<1>(curr_elem);
+        auto curr_n_edges = std::get<2>(curr_elem);
+        for (const auto& edge: curr_node->adj_list) {
+            auto to = edge->to;
+            if (to == start) {
+                continue;
+            }
+            auto it = dist.find(to);
+            if (it == dist.end()) {
+                dist[to] = std::make_tuple(curr_node, curr_dist + edge->weights.front(), curr_n_edges + 1);
+                Q.push(std::make_tuple(to, curr_dist + edge->weights.front(), curr_n_edges + 1));
+            } else {
+                auto candidate = std::make_tuple(to, curr_dist + edge->weights.front(), curr_n_edges + 1);
+
+                if (cmp(dist[to], candidate)) {
+                    Q.push(candidate);
+                    dist[to] = std::make_tuple(curr_node, curr_dist + edge->weights.front(), curr_n_edges + 1);
+                }
+            }
+        }
+
+    }
+    return dist;
 }
