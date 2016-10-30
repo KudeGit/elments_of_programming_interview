@@ -24,10 +24,23 @@ include_directories($ENV{CPPUTEST_HOME}/include)
 link_directories($ENV{CPPUTEST_HOME}/lib)
 
 #file(GLOB SOURCES "*.cpp")
+#treeTest
+set (treeTest treeTest.cpp)
+add_executable(treeTest test.cpp ${treeTest})
+target_link_libraries(treeTest CppUTest)
+
+
+
 #es1
 set (sources1 es1.cpp)
 set (testSources1 test1.cpp)
 add_executable(utest1 test.cpp ${testSources1} ${sources1})
 target_link_libraries(utest1 CppUTest)
 
+
+#es2
+set (sources2 es2.cpp)
+set (testSources2 test2.cpp)
+add_executable(utest2 test.cpp ${testSources2} ${sources2})
+target_link_libraries(utest2 CppUTest)
 

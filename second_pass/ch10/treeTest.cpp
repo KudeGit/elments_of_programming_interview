@@ -15,10 +15,12 @@ TEST_GROUP(TreeGRoup)
 
 TEST(TreeGRoup, Empty)
 {
-    //tested on leetcode:
-    //https://leetcode.com/problems/balanced-binary-tree/
     tree<int> t;
-    t.is_balanced();
-    CHECK(0 == 0);
+    t.add_node(10);
+    t.add_node(5);
+    t.add_node(15);
+    auto print_node = [](tree_node<int>* x){std::cout << *x << std::endl;};
+    t.visit(print_node);
+
 }
 

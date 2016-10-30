@@ -60,13 +60,50 @@ CMAKE_SOURCE_DIR = /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_inte
 CMAKE_BINARY_DIR = /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/build
 
 #=============================================================================
+# Target rules for target CMakeFiles/utest2.dir
+
+# All Build rule for target.
+CMakeFiles/utest2.dir/all:
+	$(MAKE) -f CMakeFiles/utest2.dir/build.make CMakeFiles/utest2.dir/depend
+	$(MAKE) -f CMakeFiles/utest2.dir/build.make CMakeFiles/utest2.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/build/CMakeFiles --progress-num=8,9,10,11 "Built target utest2"
+.PHONY : CMakeFiles/utest2.dir/all
+
+# Include target in all.
+all: CMakeFiles/utest2.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/utest2.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/build/CMakeFiles 4
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/utest2.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/build/CMakeFiles 0
+.PHONY : CMakeFiles/utest2.dir/rule
+
+# Convenience name for target.
+utest2: CMakeFiles/utest2.dir/rule
+
+.PHONY : utest2
+
+# clean rule for target.
+CMakeFiles/utest2.dir/clean:
+	$(MAKE) -f CMakeFiles/utest2.dir/build.make CMakeFiles/utest2.dir/clean
+.PHONY : CMakeFiles/utest2.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/utest2.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/utest1.dir
 
 # All Build rule for target.
 CMakeFiles/utest1.dir/all:
 	$(MAKE) -f CMakeFiles/utest1.dir/build.make CMakeFiles/utest1.dir/depend
 	$(MAKE) -f CMakeFiles/utest1.dir/build.make CMakeFiles/utest1.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/build/CMakeFiles --progress-num=1,2,3,4 "Built target utest1"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/build/CMakeFiles --progress-num=4,5,6,7 "Built target utest1"
 .PHONY : CMakeFiles/utest1.dir/all
 
 # Include target in all.
@@ -93,6 +130,43 @@ CMakeFiles/utest1.dir/clean:
 
 # clean rule for target.
 clean: CMakeFiles/utest1.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/treeTest.dir
+
+# All Build rule for target.
+CMakeFiles/treeTest.dir/all:
+	$(MAKE) -f CMakeFiles/treeTest.dir/build.make CMakeFiles/treeTest.dir/depend
+	$(MAKE) -f CMakeFiles/treeTest.dir/build.make CMakeFiles/treeTest.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/build/CMakeFiles --progress-num=1,2,3 "Built target treeTest"
+.PHONY : CMakeFiles/treeTest.dir/all
+
+# Include target in all.
+all: CMakeFiles/treeTest.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/treeTest.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/build/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/treeTest.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/build/CMakeFiles 0
+.PHONY : CMakeFiles/treeTest.dir/rule
+
+# Convenience name for target.
+treeTest: CMakeFiles/treeTest.dir/rule
+
+.PHONY : treeTest
+
+# clean rule for target.
+CMakeFiles/treeTest.dir/clean:
+	$(MAKE) -f CMakeFiles/treeTest.dir/build.make CMakeFiles/treeTest.dir/clean
+.PHONY : CMakeFiles/treeTest.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/treeTest.dir/clean
 
 .PHONY : clean
 

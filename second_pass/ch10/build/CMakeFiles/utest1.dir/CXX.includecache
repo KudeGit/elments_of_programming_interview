@@ -123,6 +123,8 @@ stack
 -
 stdexcept
 -
+tree.hpp
+/Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/tree.hpp
 
 /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/es1.cpp
 ch10.hpp
@@ -141,4 +143,18 @@ CppUTest/CommandLineTestRunner.h
 /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/CppUTest/CommandLineTestRunner.h
 ch10.hpp
 /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/ch10.hpp
+tree.hpp
+/Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/tree.hpp
+
+/Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/tree.hpp
+iostream
+-
+vector
+-
+memory
+-
+iterator
+-
+stack
+-
 

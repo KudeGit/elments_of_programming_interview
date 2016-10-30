@@ -3,6 +3,7 @@
 
 CMakeFiles/utest1.dir/es1.cpp.o: ../ch10.hpp
 CMakeFiles/utest1.dir/es1.cpp.o: ../es1.cpp
+CMakeFiles/utest1.dir/es1.cpp.o: ../tree.hpp
 
 CMakeFiles/utest1.dir/test.cpp.o: /Users/dcuda/Downloads/cpputest/include/CppUTest/CommandLineArguments.h
 CMakeFiles/utest1.dir/test.cpp.o: /Users/dcuda/Downloads/cpputest/include/CppUTest/CommandLineTestRunner.h
@@ -40,4 +41,5 @@ CMakeFiles/utest1.dir/test1.cpp.o: /Users/dcuda/Downloads/cpputest/include/CppUT
 CMakeFiles/utest1.dir/test1.cpp.o: /Users/dcuda/Downloads/cpputest/include/CppUTest/UtestMacros.h
 CMakeFiles/utest1.dir/test1.cpp.o: ../ch10.hpp
 CMakeFiles/utest1.dir/test1.cpp.o: ../test1.cpp
+CMakeFiles/utest1.dir/test1.cpp.o: ../tree.hpp
 

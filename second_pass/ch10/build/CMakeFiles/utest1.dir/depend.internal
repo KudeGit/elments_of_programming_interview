@@ -4,6 +4,7 @@
 CMakeFiles/utest1.dir/es1.cpp.o
  /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/ch10.hpp
  /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/es1.cpp
+ /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/tree.hpp
 CMakeFiles/utest1.dir/test.cpp.o
  /Users/dcuda/Downloads/cpputest/include/CppUTest/CommandLineArguments.h
  /Users/dcuda/Downloads/cpputest/include/CppUTest/CommandLineTestRunner.h
@@ -41,3 +42,4 @@ CMakeFiles/utest1.dir/test1.cpp.o
  /Users/dcuda/Downloads/cpputest/include/CppUTest/UtestMacros.h
  /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/ch10.hpp
  /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/test1.cpp
+ /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch10/tree.hpp
