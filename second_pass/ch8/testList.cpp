@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <numeric>
 
 #include "CppUTest/TestHarness.h"
 #include "CppUTest/CommandLineTestRunner.h"
@@ -19,6 +21,7 @@ TEST(LinkedListGroup, Empty0)
     CHECK(ln.data == 0);
     CHECK(ln1.data == 10);
 }
+
 TEST(LinkedListGroup, insertInFront)
 {
     List<int> l;
@@ -35,3 +38,12 @@ TEST(LinkedListGroup, insertInFront)
     CHECK(ln == nullptr);
 }
 
+TEST(LinkedListGroup, ListIterator)
+{
+    List<int> l;
+    std::vector<int> A{1,2,3,4,5,6,7,8,9,0};
+    for (const auto& a: A) {
+        l.push_front(a);
+    }
+    CHECK(std::accumulate(l.begin(), l.end(), 0) == std::accumulate(A.begin(), A.end(), 0));
+}

@@ -127,6 +127,8 @@ iostream
 -
 memory
 -
+stdexcept
+-
 
 /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch8/test.cpp
 CppUTest/CommandLineTestRunner.h
@@ -136,6 +138,10 @@ CppUTest/CommandLineTestRunner.h
 iostream
 -
 vector
+-
+algorithm
+-
+numeric
 -
 CppUTest/TestHarness.h
 /Users/dcuda/Dropbox/AlgoPrivate/elements_of_programming_interview/second_pass/ch8/CppUTest/TestHarness.h
