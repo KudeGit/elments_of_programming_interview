@@ -47,13 +47,16 @@ struct ListIterator {
         return &(operator*());
     }
     _Self& operator++() {
+        if (!l_node) {
+            throw std::logic_error("Out of bound");
+        }
         l_node = l_node->next;
         return *this;
     }
     _Self& operator++ (int) {
         _Self tmp = l_node;
-        l_node = l_node->next;
-        return *tmp;
+        operator++();
+        return return tmp;
     }
     bool operator== (const _Self& other) const {
         return l_node == other.l_node;
@@ -91,7 +94,7 @@ struct ListConstIterator {
         return &(operator*());
     }
     _Self& operator++() {
-        if (l_node) {
+        if (!l_node) {
             throw std::logic_error("Out of boud");
         }
         l_node = l_node->next;
