@@ -28,6 +28,14 @@ TEST(RPNTransform, SimpleEx2)
     CHECK(rpn_str == "5,3,+,12,*,3,2,^,/");
 }
 
+
+TEST(RPNTransform, SimpleEx3)
+{
+    std::vector<std::string> strs{"2", "*", "3", "+", "1"};
+    auto rpn_str = transform_to_rpn(strs);
+    CHECK(rpn_str == "2,3,*,1,+");
+    CHECK(evalute_rpn(rpn_str) == 7);
+}
 TEST_GROUP(RPNEvalutation)
 {
 

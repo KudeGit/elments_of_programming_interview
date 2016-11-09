@@ -77,6 +77,26 @@ struct tree {
         is_k_balanced(root.get(), k, res);
         return res;
     }
+
+    bool is_symmetric(const tree_node<T>* x, const tree_node<T>* y) {
+        if (!x && !y) {
+            return true;
+        } else if (!x ^ !y) {
+            return false;
+        } else if (x->data != y->data) {
+            return false;
+        } else {
+            return is_symmetric(x->left.get(), y->right.get()) &&
+                is_symmetric(x->right.get(), y->left.get());
+        }
+    }
+
+    bool is_symmetric() {
+        if (!root) {
+            return true;
+        }
+        return is_symmetric(root->left.get(), root->right.get());
+    }
 };
 template< class T>
 void tree<T>::add_node(T data)
