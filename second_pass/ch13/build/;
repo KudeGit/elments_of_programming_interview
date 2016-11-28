@@ -1,0 +1,22 @@
+#include <iostream>
+#include <unordered_map>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <algorithm>
+#include "ch14.hpp"
+
+
+std::unordered_map<std::string, std::vector<std::string>>
+partition_into_anagrams (const std::string& dict_file_name)
+{
+    std::ifstream dict_ifstram(dict_file_name);
+    if (!dict_ifstream.good()) {
+        return {};
+    }
+
+    std::string line;
+    while (getline(dict_ifstream, line)) {
+        
+    }
+}
