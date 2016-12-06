@@ -4,6 +4,7 @@ project (el_prog_interview_ch1)
 set(CMAKE_BUILD_TYPE Debug)
 
 # Check for CppUTest and bail out if they don't have it
+# Shoulf be set to CPPUTEST_HOME:/Users/dcuda/Downloads/cpputest
 message("CPPUTEST_HOME:" $ENV{CPPUTEST_HOME})
 
 if(DEFINED ENV{CPPUTEST_HOME})

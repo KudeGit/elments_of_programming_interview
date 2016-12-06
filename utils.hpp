@@ -18,18 +18,18 @@
 #include <algorithm>
 
 
-void banner(const std::string& s) 
-{
-    int l = (80 - s.size() + 2) >> 1;
-    std::cout << std::string(l, '#') << ' ' << s 
-        << ' ' << std::string(l, '#') << std::endl;
-
-}
-
-void banner (void)
-{
-    banner(std::string());
-}
+//void banner(const std::string& s) 
+//{
+//    int l = (80 - s.size() + 2) >> 1;
+//    std::cout << std::string(l, '#') << ' ' << s 
+//        << ' ' << std::string(l, '#') << std::endl;
+//
+//}
+//
+//void banner (void)
+//{
+//    banner(std::string());
+//}
 
 
 template <class T, class Y>
@@ -127,22 +127,22 @@ std::ostream& operator<< (std::ostream& out, const std::unordered_map<X,Y> &map)
 
 
 
-std::unordered_set<std::string> load_dictionary (const std::string& dict_name = "/usr/share/dict/words")
-{
-    std::ifstream fdicionary(dict_name);
-    if (!fdicionary.good()) {
-        throw std::invalid_argument("cannot open dictionary file");
-    }
-    std::string word;
-    std::unordered_set<std::string> words;
-    while(getline(fdicionary, word)) {
-        std::transform(word.begin(), word.end(), word.begin(), ::tolower);
-        if (words.find(word) == words.end()) {
-            words.insert(word);
-        }
-    }
-    return words;
-}
+//std::unordered_set<std::string> load_dictionary (const std::string& dict_name = "/usr/share/dict/words")
+//{
+//    std::ifstream fdicionary(dict_name);
+//    if (!fdicionary.good()) {
+//        throw std::invalid_argument("cannot open dictionary file");
+//    }
+//    std::string word;
+//    std::unordered_set<std::string> words;
+//    while(getline(fdicionary, word)) {
+//        std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+//        if (words.find(word) == words.end()) {
+//            words.insert(word);
+//        }
+//    }
+//    return words;
+//}
 
 
 #define debug(x) do{std::cout << #x <<": " << x << std::endl; std::cin.get();}while(0)
