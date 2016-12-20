@@ -147,6 +147,6 @@ std::ostream& operator<< (std::ostream& out, const std::unordered_map<X,Y> &map)
 
 #define debug(x) do{std::cout << #x <<": " << x << std::endl; std::cin.get();}while(0)
 #define error(fmt, ...) fprintf(stderr, fmt"\n", ##__VA_ARGS__)
-#define print(x) std::cout << #x": " << x << std::endl;
+//#define print(x) std::cout << #x": " << x << std::endl;
 
 #endif
