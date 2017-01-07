@@ -3,7 +3,7 @@
 #define __UTILS__
 
 #define MIN(x,y) (((x) < (y)) ? (x) : (y))
-#define MAX(x,y) (((x) < (y)) ? (x) : (y))
+#define MAX(x,y) (((x) > (y)) ? (x) : (y))
 
 #include <iostream>
 #include <vector>

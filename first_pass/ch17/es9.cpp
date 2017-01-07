@@ -11,11 +11,10 @@ std::vector<std::vector<long long>> count_ways (const std::vector<int>& A,
             std::vector<long long>(A.size() + 1, 0));
 
     //only one way to to reach 0
-    for (long long i = 0; i <= A.size(); ++i) {
-        K[0][i] = 1;
-    }
-    for (int i = 0; i <= tot; ++i) {
-        for (int j = 0; j < A.size(); ++j) {
+    K[0][0] = 1;
+
+    for (int j = 0; j < A.size(); ++j) {
+        for (int i = 1; i <= tot; ++i) {
             K[i][j+1] = K[i][j] +
                 (A[j] <= i ? K[i - A[j]][j] : 0);
         }
@@ -66,7 +65,7 @@ int main (void)
         { 10}, { 3},
         { 3},
     };
-    auto votes = is_tie_possible(states);
+    auto votes = is_tie_possible({2,2});
     debug(votes);
     return 0;
 }
